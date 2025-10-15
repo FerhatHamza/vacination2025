@@ -1,59 +1,61 @@
-// ✨ Connect to your Cloudflare Worker API
-const API_BASE = "https://paramedberriane-api.ferhathamza17.workers.dev"; // ✅ تأكد من استخدام https://
+const API_BASE = "https://your-worker-url.workers.dev"; // ⬅️ Replace with your actual Worker URL
 
-const API = {
-  // جلب الإحصائيات العامة (لـ admin.html)
-  getStats: async () => {
-    const resp = await fetch(`${API_BASE}/api/stats`);
-    if (!resp.ok) throw new Error("Erreur lors du chargement des stats");
-    return await resp.json();
-  },
+// Helper for JSON requests
+async function request(endpoint, method = "GET", body = null, token = null) {
+  const headers = { "Content-Type": "application/json" };
+  if (token) headers["Authorization"] = `Bearer ${token}`;
 
-  // جلب قائمة القاعات
-  getClasses: async () => {
-    const resp = await fetch(`${API_BASE}/api/classes`);
-    if (!resp.ok) throw new Error("Erreur lors du chargement des classes");
-    return await resp.json();
-  },
+  const options = { method, headers };
+  if (body) options.body = JSON.stringify(body);
 
-  // جلب الطلاب حسب رقم القاعة
-  getStudentsByClass: async (cls) => {
-    const resp = await fetch(`${API_BASE}/api/students?class=${cls}`);
-    if (!resp.ok) throw new Error("Erreur lors du chargement des étudiants");
-    return await resp.json();
-  },
+  const response = await fetch(`${API_BASE}${endpoint}`, options);
+  const data = await response.json();
 
-  // حفظ الغياب والحضور
-  saveAttendance: async (classNum, students) => {
-    console.log(students);
-    const resp = await fetch(`${API_BASE}/api/save`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ class: classNum, students }),
-    });
-    if (!resp.ok) throw new Error("Erreur lors de l'enregistrement des présences");
-    return await resp.json();
-  },
+  if (!response.ok) {
+    throw new Error(data.error || "Request failed");
+  }
+  return data;
+}
 
-  getReady2: async () => {
-    const resp2 = await fetch(`${API_BASE}/api/choices/init`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({}),
-    });
-    if (!resp2.ok) throw new Error("Erreur tarzi");
-    return await resp2.json();
-  },
-  // GET REDY 
-  getReady: async () => {
-    const resp = await fetch(`${API_BASE}/api/attendance/all`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({}),
-    });
-    
-    if (!resp.ok) throw new Error("Erreur tarzi");
-    
-    return await resp.json();
-  },
-};
+// ----------------------------
+// AUTHENTICATION
+// ----------------------------
+export async function login(username, password) {
+  return await request("/api/login", "POST", { username, password });
+}
+
+// ----------------------------
+// DAILY REPORT
+// ----------------------------
+export async function saveDailyReport({ etab, date, centres, equipes, vaccines, quantiteAdministree }) {
+  return await request("/api/saveDaily", "POST", {
+    etab,
+    date,
+    centres,
+    equipes,
+    vaccines,
+    quantiteAdministree
+  });
+}
+
+// ----------------------------
+// HISTORY
+// ----------------------------
+export async function getHistory(etab, limit = 30, offset = 0) {
+  const params = new URLSearchParams({ etab, limit, offset });
+  return await request(`/api/history?${params.toString()}`, "GET");
+}
+
+// ----------------------------
+// ADMIN STATS
+// ----------------------------
+export async function getAdminStats(token) {
+  return await request("/api/admin/stats", "GET", null, token);
+}
+
+// ----------------------------
+// HEALTH CHECK
+// ----------------------------
+export async function checkHealth() {
+  return await request("/api/health", "GET");
+}
