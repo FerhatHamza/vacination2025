@@ -1,4 +1,6 @@
-function login() {
+import { loginUser, logoutUser, getCurrentUser, isAuthenticated } from "./auth.js";
+
+async function login() {
   const etablissement = document.getElementById("etablissement").value;
   const password = document.getElementById("password").value;
 
@@ -7,34 +9,13 @@ function login() {
     return;
   }
 
-  // Admin
-  if (etablissement === "Admin" && password === "admin") {
-    localStorage.setItem("role", "admin");
-    localStorage.setItem("etablissement", "Admin");
-    window.location.href = "dashboard.html";
-    return;
+  try {
+    const user = await loginUser("EHS Ghardaia", "m8#Qp6Lw");
+    console.log("✅ Logged in:", user);
+  } catch (error) {
+    console.error("❌ Login failed:", error.message);
   }
-
-  // Coordinateurs and their passwords
-  const credentials = {
-    "EHS Ghardaia": "m8#Qp6Lw",
-    "EPSP Ghardaia": "7Xr%2bNk",
-    "EPSP Metlili": "hP4&z9Yq",
-    "EPSP Guerrara": "!T6sV2mB",
-    "EPSP Berriane": "R3#kH8uS",
-    "EPH Ghardaia": "n5$Gq7Zj",
-    "EPH Metlili": "Yt9^4pLm",
-    "EPH Guerrara": "2b@Vw6Qx",
-    "EPH Berriane": "cK7*R2hZ",
-  };
-
-  if (credentials[etablissement] && credentials[etablissement] === password) {
-    localStorage.setItem("role", "coordinateur");
-    localStorage.setItem("etablissement", etablissement);
-    window.location.href = "daily.html";
-  } else {
-    alert("Identifiants incorrects !");
-  }
+  
 }
 
 function checkAccess(requiredRole) {
