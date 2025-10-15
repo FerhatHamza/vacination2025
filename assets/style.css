@@ -67,7 +67,7 @@ body {
   transform: scale(1.05);
 }
 
-h2 {
+h3 {
   margin: 0;
   font-size: clamp(1.3rem, 2.8vw, 1.8rem);
   color: #004085;
