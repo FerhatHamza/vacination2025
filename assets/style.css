@@ -50,7 +50,7 @@ body {
 }
 
 .header .logo {
-  width: 150%;
+  width: 120%;
   max-width: 400px;          /* bigger logo */
   height: auto;
   margin-bottom: 1rem;
