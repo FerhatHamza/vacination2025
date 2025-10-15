@@ -1,0 +1,8 @@
+name = "vaccination-app"
+main = "worker.js"
+compatibility_date = "2024-09-10"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "vaccination_db"
+database_id = "your-d1-id"

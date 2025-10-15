@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Évaluation Vaccination Antigrippale 2025/2026</title>
+  <link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-card">
+      <div class="header">
+        <img src="assets/logo.png" alt="Logo Santé" class="logo" />
+        <h2>Évaluation de la Vaccination Antigrippale 2025/2026</h2>
+        <p>Ministère de la Santé – Wilaya de Ghardaïa</p>
+      </div>
+
+      <div class="form">
+        <label for="etablissement">Établissement</label>
+        <select id="etablissement">
+          <option value="">-- Sélectionner --</option>
+          <option>Admin</option>
+          <option>EHS Ghardaia</option>
+          <option>EPSP Ghardaia</option>
+          <option>EPSP Metlili</option>
+          <option>EPSP Guerrara</option>
+          <option>EPSP Berriane</option>
+          <option>EPH Ghardaia</option>
+          <option>EPH Metlili</option>
+          <option>EPH Guerrara</option>
+          <option>EPH Berriane</option>
+        </select>
+
+        <label for="password">Mot de passe</label>
+        <input type="password" id="password" placeholder="••••••••" />
+
+        <button onclick="login()">Se connecter</button>
+      </div>
+
+      <footer>
+        <small>© 2025 - Direction de la Santé de Ghardaïa</small>
+      </footer>
+    </div>
+  </div>
+
+  <script src="scripts/script.js"></script>
+</body>
+</html>
