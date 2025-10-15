@@ -1,5 +1,6 @@
 import { loginUser, logoutUser, getCurrentUser, isAuthenticated } from "./auth.js";
 const loginBtn = document.getElementById("loginBtn");
+const error = document.getElementById("error");
 
 loginBtn.addEventListener('click', login)
 
@@ -17,6 +18,7 @@ async function login() {
     const user = await loginUser(etablissement, password);
     console.log("✅ Logged in:", user);
   } catch (error) {
+    error.innerHTML = error.message;
     console.error("❌ Login failed:", error.message);
   }
   
