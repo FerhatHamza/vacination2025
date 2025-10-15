@@ -17,15 +17,15 @@ function login() {
 
   // Coordinateurs and their passwords
   const credentials = {
-    "EHS Ghardaia": "ehs2025",
-    "EPSP Ghardaia": "epspghardaia2025",
-    "EPSP Metlili": "epspmetlili2025",
-    "EPSP Guerrara": "epspguerrara2025",
-    "EPSP Berriane": "epspberriane2025",
-    "EPH Ghardaia": "ephghardaia2025",
-    "EPH Metlili": "ephmetlili2025",
-    "EPH Guerrara": "ephguerrara2025",
-    "EPH Berriane": "ephberriane2025",
+    "EHS Ghardaia": "m8#Qp6Lw",
+    "EPSP Ghardaia": "7Xr%2bNk",
+    "EPSP Metlili": "hP4&z9Yq",
+    "EPSP Guerrara": "!T6sV2mB",
+    "EPSP Berriane": "R3#kH8uS",
+    "EPH Ghardaia": "n5$Gq7Zj",
+    "EPH Metlili": "Yt9^4pLm",
+    "EPH Guerrara": "2b@Vw6Qx",
+    "EPH Berriane": "cK7*R2hZ",
   };
 
   if (credentials[etablissement] && credentials[etablissement] === password) {
