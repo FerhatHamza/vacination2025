@@ -13,7 +13,8 @@ async function login() {
   }
 
   try {
-    const user = await loginUser("EHS Ghardaia", "m8#Qp6Lw");
+    console.log(etablissement, password);
+    const user = await loginUser(etablissement, password);
     console.log("✅ Logged in:", user);
   } catch (error) {
     console.error("❌ Login failed:", error.message);
