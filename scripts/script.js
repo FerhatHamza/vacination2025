@@ -18,7 +18,7 @@ async function login() {
     const user = await loginUser(etablissement, password);
     console.log("✅ Logged in:", user);
   } catch (error) {
-    error.innerHTML = error.message;
+    error.textContent  = error.message;
     console.error("❌ Login failed:", error.message);
   }
   
