@@ -266,17 +266,7 @@ input:focus {
   transform: translateY(-1px);
 }
 
-/* Parent header wrapper (add this if not styled yet) */
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: #f8f9fa;
-  border-bottom: 2px solid #e3e6ea;
-  padding: 15px 25px;
-  border-radius: 12px;
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
-}
+
 
 /* Responsive tweaks */
 @media (max-width: 600px) {
