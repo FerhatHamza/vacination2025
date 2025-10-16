@@ -209,3 +209,6 @@ input:focus {
     font-size: 1.2rem;
   }
 }
+#recue {
+  display: none;
+}
