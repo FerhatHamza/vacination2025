@@ -1,5 +1,5 @@
 import { getsetupCount } from './api.js';
-const apiBase = "https://paramedberriane-api.ferhathamza17.workers.dev";
+const API_BASE = "https://vacination2025-api.ferhathamza17.workers.dev";
 checkAccess("coordinateur");
 
 const logoutBtn = document.getElementById("logoutId");
