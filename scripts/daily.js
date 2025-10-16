@@ -1,8 +1,13 @@
+import { getsetupCount } from './api.js';
 const apiBase = "https://paramedberriane-api.ferhathamza17.workers.dev";
 checkAccess("coordinateur");
 
+const saveSetup = document.getElementById("saveSetup");
+
 document.addEventListener("DOMContentLoaded", () => {
   initPage();
+  const countSetup = getsetupCount();
+  console.log(countSetup);
 });
 
 function checkAccess(requiredRole) {
