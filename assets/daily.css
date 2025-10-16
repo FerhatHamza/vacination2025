@@ -61,8 +61,8 @@ h2, h3 {
 }
 
 label {
-  font-weight: 600;
-  color: #303f9f;
+  font-weight: 300;
+  color: black;
   display: block;
   margin-bottom: 0.3rem;
 }
