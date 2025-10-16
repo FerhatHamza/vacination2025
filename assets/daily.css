@@ -93,7 +93,7 @@ input:focus {
   font-size: 1.5rem;
 }
 
-.save-btn {
+.save-btn .SetupSave-btn{
   width: 100%;
   padding: 1rem;
   border: none;
