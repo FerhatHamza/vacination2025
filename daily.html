@@ -11,14 +11,17 @@
   <main class="center-container">
     <form id="vaccinationForm" onsubmit="saveDailyData(event)" class="form-card">
            
-      <div class="header-left">
-          <h2>Évaluation Vaccination Antigrippale 2025/2026</h2>
-          <p id="etabName"></p>
+      <header class="main-header">
+        <h2>Évaluation Vaccination Antigrippale 2025/2026</h2>
+      
+        <div class="header-bottom">
+          <p id="etabName">EPSP Berriane</p>
+          <div class="header-right">
+            <span id="today"></span>
+            <button class="logout-btn" onclick="logout()">Déconnexion</button>
+          </div>
         </div>
-        <div class="header-right">
-          <span id="today"></span>
-          <button class="logout-btn" onclick="logout()"> Déconnexion</button>
-      </div>
+      </header>
 
       <div class="grid">
         <div class="form-group">
