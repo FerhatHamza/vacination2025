@@ -62,7 +62,7 @@ function initPage() {
   console.log(etab);
   document.getElementById("recue").value = predefined[etab] || 0;
 
-  loadHistory();
+  // loadHistory();
 }
 
 function calcTotal() {
@@ -112,32 +112,32 @@ async function saveDailyData(e) {
 
   if (res.ok) {
     alert("Données enregistrées avec succès !");
-    loadHistory();
+    // loadHistory();
   } else {
     alert("Erreur d’enregistrement.");
   }
 }
 
-async function loadHistory() {
+// async function loadHistory() {
   
-  const user = JSON.parse(localStorage.getItem("userSession"));
-  const etab = user.etab;
-  const res = await fetch(`${apiBase}/api/history?etab=${encodeURIComponent(etab)}`);
-  const data = await res.json();
+//   const user = JSON.parse(localStorage.getItem("userSession"));
+//   const etab = user.etab;
+//   const res = await fetch(`${apiBase}/api/history?etab=${encodeURIComponent(etab)}`);
+//   const data = await res.json();
 
-  const tbody = document.querySelector("#historyTable tbody");
-  tbody.innerHTML = "";
-  data.forEach(d => {
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${d.date}</td>
-      <td>${d.total}</td>
-      <td>${d.administree}</td>
-      <td>${d.restante}</td>
-    `;
-    tbody.appendChild(tr);
-  });
-}
+//   const tbody = document.querySelector("#historyTable tbody");
+//   tbody.innerHTML = "";
+//   data.forEach(d => {
+//     const tr = document.createElement("tr");
+//     tr.innerHTML = `
+//       <td>${d.date}</td>
+//       <td>${d.total}</td>
+//       <td>${d.administree}</td>
+//       <td>${d.restante}</td>
+//     `;
+//     tbody.appendChild(tr);
+//   });
+// }
 
 function logout() {
   localStorage.clear();
