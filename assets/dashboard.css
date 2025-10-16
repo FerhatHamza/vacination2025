@@ -1,121 +1,445 @@
-body {
+/* ==========================
+   Enhanced Base and layout
+   ========================== */
+* {
+  box-sizing: border-box;
   margin: 0;
+  padding: 0;
+}
+
+body {
   font-family: "Poppins", sans-serif;
-  background-color: #f4f7fb;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  min-height: 100vh;
+  padding: clamp(0.5rem, 2vw, 1rem);
 }
 
+/* ==========================
+   Enhanced Container
+   ========================== */
 .container {
-  max-width: 1200px;
-  margin: auto;
-  padding: 20px;
+  width: 100%;
+  max-width: min(98%, 1200px);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1rem, 3vw, 1.5rem);
 }
 
+/* ==========================
+   Enhanced Header Bar
+   ========================== */
 .header-bar {
-  background-color: #0066cc;
-  color: white;
-  padding: 20px;
-  border-radius: 12px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  padding: clamp(1rem, 3vw, 1.5rem);
+  border-radius: 16px;
+  box-shadow: 
+    0 6px 25px rgba(0, 64, 133, 0.08),
+    0 2px 6px rgba(0, 64, 133, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
   flex-wrap: wrap;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  gap: clamp(0.8rem, 2vw, 1.2rem);
+  position: relative;
+  overflow: hidden;
+}
+
+.header-bar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #007bff, #0056b3, #003d82);
 }
 
 .header-bar h2 {
+  color: #1e3a8a;
+  font-size: clamp(1.1rem, 3.5vw, 1.6rem);
+  font-weight: 600;
   margin: 0;
   text-align: center;
-  flex-grow: 1;
+  flex: 1;
+  min-width: min(100%, 300px);
+  line-height: 1.3;
 }
 
 .logout-btn {
-  background-color: white;
-  color: #0066cc;
+  background: linear-gradient(135deg, #e63946 0%, #c1121f 100%);
+  color: white;
   border: none;
-  padding: 10px 16px;
-  border-radius: 6px;
+  padding: clamp(0.6rem, 1.5vw, 0.8rem) clamp(1rem, 2.5vw, 1.5rem);
+  border-radius: 10px;
+  font-weight: 600;
   cursor: pointer;
-  font-weight: bold;
-  transition: 0.3s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: clamp(0.8rem, 1.8vw, 0.95rem);
+  min-height: 44px;
+  white-space: nowrap;
+  box-shadow: 0 3px 12px rgba(230, 57, 70, 0.25);
 }
 
 .logout-btn:hover {
-  background-color: #0052a3;
-  color: white;
+  background: linear-gradient(135deg, #c1121f 0%, #a4161a 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(230, 57, 70, 0.35);
 }
 
+/* ==========================
+   Enhanced Stats Section
+   ========================== */
 .stats-section {
-  margin-top: 30px;
+  width: 100%;
 }
 
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+  gap: clamp(1rem, 2.5vw, 1.5rem);
 }
 
 .card {
-  background-color: white;
-  border-radius: 10px;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  border-radius: 16px;
+  padding: clamp(1.2rem, 3vw, 1.8rem) clamp(1rem, 2.5vw, 1.5rem);
+  box-shadow: 
+    0 6px 25px rgba(0, 64, 133, 0.08),
+    0 2px 6px rgba(0, 64, 133, 0.03);
   text-align: center;
-  padding: 20px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #007bff, #0056b3);
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px) scale(1.01);
+  box-shadow: 
+    0 12px 30px rgba(0, 64, 133, 0.12),
+    0 4px 12px rgba(0, 64, 133, 0.06);
+}
+
+.card:hover::before {
+  transform: scaleX(1);
 }
 
 .card h4 {
-  margin: 0 0 10px 0;
-  color: #333;
+  font-size: clamp(0.85rem, 2.2vw, 1rem);
+  color: #475569;
+  margin-bottom: clamp(0.8rem, 2vw, 1rem);
+  font-weight: 500;
+  line-height: 1.4;
 }
 
 .card p {
-  font-size: 1.8rem;
-  font-weight: bold;
-  color: #0066cc;
+  font-size: clamp(1.6rem, 5vw, 2.2rem);
+  font-weight: 700;
+  color: #1e40af;
+  margin: 0;
+  background: linear-gradient(135deg, #1e40af, #3b82f6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Enhanced Red Card */
+.red-card {
+  background: linear-gradient(135deg, #fff5f5 0%, #fed7d7 100%);
+  border: 1px solid rgba(254, 215, 215, 0.8);
 }
 
 .red-card p {
-  color: #d32f2f;
+  background: linear-gradient(135deg, #dc2626, #ef4444);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
-.card.clickable:hover {
-  transform: scale(1.05);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
-  cursor: pointer;
+.red-card::before {
+  background: linear-gradient(90deg, #ef4444, #dc2626);
 }
 
+/* ==========================
+   Enhanced Charts Container
+   ========================== */
+.charts-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(1rem, 2.5vw, 1.5rem);
+  width: 100%;
+}
+
+/* ==========================
+   Enhanced Chart Sections
+   ========================== */
 .chart-section {
-  margin-top: 40px;
-  background-color: white;
-  border-radius: 10px;
-  padding: 20px;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  border-radius: 16px;
+  padding: clamp(1.2rem, 3vw, 1.8rem);
+  box-shadow: 
+    0 6px 25px rgba(0, 64, 133, 0.08),
+    0 2px 6px rgba(0, 64, 133, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
 }
 
+.chart-section:hover {
+  box-shadow: 
+    0 10px 35px rgba(0, 64, 133, 0.12),
+    0 3px 10px rgba(0, 64, 133, 0.06);
+}
+
+.chart-section h3 {
+  color: #1e3a8a;
+  font-size: clamp(1rem, 2.8vw, 1.3rem);
+  margin-bottom: clamp(1rem, 2.5vw, 1.5rem);
+  text-align: center;
+  font-weight: 600;
+  position: relative;
+  padding-bottom: 0.6rem;
+}
+
+.chart-section h3::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50px;
+  height: 2px;
+  background: linear-gradient(90deg, #007bff, #0056b3);
+  border-radius: 1px;
+}
+
+.chart-section canvas {
+  width: 100% !important;
+  height: 450px !important;
+  border-radius: 10px;
+}
+
+/* ==========================
+   Enhanced Table Section
+   ========================== */
 .table-section {
-  margin-top: 40px;
-  background-color: white;
-  border-radius: 10px;
-  padding: 20px;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  border-radius: 16px;
+  padding: clamp(1.2rem, 3vw, 1.8rem);
+  box-shadow: 
+    0 6px 25px rgba(0, 64, 133, 0.08),
+    0 2px 6px rgba(0, 64, 133, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
 }
 
-table {
+.table-section:hover {
+  box-shadow: 
+    0 10px 35px rgba(0, 64, 133, 0.12),
+    0 3px 10px rgba(0, 64, 133, 0.06);
+}
+
+.table-section h3 {
+  color: #1e3a8a;
+  font-size: clamp(1rem, 2.8vw, 1.3rem);
+  margin-bottom: clamp(1rem, 2.5vw, 1.5rem);
+  text-align: center;
+  font-weight: 600;
+  position: relative;
+  padding-bottom: 0.6rem;
+}
+
+.table-section h3::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50px;
+  height: 2px;
+  background: linear-gradient(90deg, #007bff, #0056b3);
+  border-radius: 1px;
+}
+
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  background: white;
+}
+
+#tableDetails {
   width: 100%;
   border-collapse: collapse;
+  font-size: clamp(0.8rem, 1.8vw, 0.9rem);
+  min-width: 800px;
 }
 
-th, td {
-  padding: 10px;
-  text-align: center;
-  border-bottom: 1px solid #ddd;
-}
-
-th {
-  background-color: #0066cc;
+#tableDetails th {
+  background: linear-gradient(135deg, #1e40af 0%, #3730a3 100%);
   color: white;
+  font-weight: 600;
+  padding: clamp(0.8rem, 2vw, 1rem);
+  text-align: center;
+  white-space: nowrap;
+  border: none;
+  font-size: 0.9em;
 }
 
-tr:hover {
-  background-color: #f1f1f1;
+#tableDetails td {
+  padding: clamp(0.7rem, 1.8vw, 0.9rem);
+  text-align: center;
+  border-bottom: 1px solid #f1f5f9;
+  background: white;
+  transition: all 0.2s ease;
+  font-weight: 500;
 }
+
+#tableDetails tr:hover td {
+  background: #f8fafc;
+}
+
+#tableDetails th:last-child,
+#tableDetails td:last-child {
+  background: linear-gradient(135deg, #3730a3 0%, #312e81 100%);
+  color: white;
+  font-weight: 600;
+}
+
+/* ==========================
+   Enhanced Responsive Adjustments
+   ========================== */
+
+/* Tablets and small laptops */
+@media (max-width: 1024px) {
+  .container {
+    max-width: 97%;
+  }
+  
+  .stats-grid {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+  }
+  
+  .charts-container {
+    grid-template-columns: 1fr;
+    gap: 1.2rem;
+  }
+  
+  .chart-section canvas {
+    height: 220px !important;
+  }
+}
+
+/* Mobile devices */
+@media (max-width: 768px) {
+  body {
+    padding: 0.4rem;
+  }
+  
+  .header-bar {
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
+    padding: 1.2rem;
+  }
+  
+  .header-bar h2 {
+    min-width: 100%;
+    order: -1;
+  }
+  
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .chart-section,
+  .table-section {
+    padding: 1.2rem;
+  }
+  
+  .logout-btn {
+    width: 100%;
+    max-width: 200px;
+  }
+}
+
+/* Small mobile devices */
+@media (max-width: 480px) {
+  body {
+    padding: 0.3rem;
+  }
+  
+  .container {
+    max-width: 100%;
+    gap: 1.2rem;
+  }
+  
+  .header-bar {
+    padding: 1rem;
+  }
+  
+  .card {
+    padding: 1.2rem 1rem;
+  }
+  
+  .chart-section,
+  .table-section {
+    padding: 1rem;
+  }
+  
+  .chart-section canvas {
+    height: 600px !important;
+  }
+}
+
+/* Very small devices (Galaxy Fold, etc.) */
+@media (max-width: 320px) {
+  .container {
+    padding: 0.1rem;
+  }
+  
+  .header-bar,
+  .card,
+  .chart-section,
+  .table-section {
+    padding: 0.8rem;
+    border-radius: 12px;
+  }
+  
+  .card h4 {
+    font-size: 0.8rem;
+  }
+  
+  .card p {
+    font-size: 1.5rem;
+  }
+  
+  .chart-section canvas {
+    height: 180px !important;
+  }
+}
+
+/* Rest of the CSS remains the same for dark mode, print styles, etc. */

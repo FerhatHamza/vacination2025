@@ -1,68 +1,71 @@
 <!DOCTYPE html>
 <html lang="fr">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tableau de Bord – Vaccination Antigrippale</title>
-  <link rel="stylesheet" href="assets/style.css" />
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
-<body>
-  <div class="container">
-    <header class="header-bar">
-      <h2>Tableau de Bord Global – Vaccination Antigrippale 2025/2026</h2>
-      <button class="logout-btn" id="logoutId">Déconnexion</button>
-    </header>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tableau de Bord – Vaccination Antigrippale</title>
+    <link rel="stylesheet" href="assets/dashboard.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <header class="header-bar">
+        <h2>Tableau de Bord Global – Vaccination Antigrippale 2025/2026</h2>
+        <button class="logout-btn" id="logoutId">Déconnexion</button>
+      </header>
 
-    <section class="stats-section">
-      <div class="stats-grid">
-        <div class="card clickable" id="cardReçue">
-          <h4>Total des doses reçues</h4>
-          <p id="totalReçue">0</p>
+      <section class="stats-section">
+        <div class="stats-grid">
+          <div class="card clickable" id="cardReçue">
+            <h4>Total des doses reçues</h4>
+            <p id="totalReçue">0</p>
+          </div>
+          <div class="card clickable" id="cardAdmin">
+            <h4>Total des doses administrées</h4>
+            <p id="totalAdmin">0</p>
+          </div>
+          <div class="card clickable red-card" id="cardRestante">
+            <h4>Total des doses restantes</h4>
+            <p id="totalRestante">0</p>
+          </div>
+          <div class="card clickable" id="cardVaccines">
+            <h4>Total des personnes vaccinées</h4>
+            <p id="totalVaccines">0</p>
+          </div>
         </div>
-        <div class="card clickable" id="cardAdmin">
-          <h4>Total des doses administrées</h4>
-          <p id="totalAdmin">0</p>
-        </div>
-        <div class="card clickable red-card" id="cardRestante">
-          <h4>Total des doses restantes</h4>
-          <p id="totalRestante">0</p>
-        </div>
-        <div class="card clickable" id="cardVaccines">
-          <h4>Total des personnes vaccinées</h4>
-          <p id="totalVaccines">0</p>
-        </div>
+      </section>
+
+      <!-- Modified: Charts side by side -->
+      <div class="charts-container">
+        <section class="chart-section">
+          <h3>Répartition par établissement</h3>
+          <canvas id="chartEtab"></canvas>
+        </section>
+
+        <section class="chart-section">
+          <h3>Répartition par catégorie de population</h3>
+          <canvas id="chartCategories"></canvas>
+        </section>
       </div>
-    </section>
 
-    <section class="chart-section">
-      <h3>Répartition par établissement</h3>
-      <canvas id="chartEtab" height="120"></canvas>
-    </section>
+      <section class="table-section" id="detailsSection" style="display: none">
+        <h3>Détails par Établissement</h3>
+        <table id="tableDetails">
+          <thead>
+            <tr>
+              <th>Établissement</th>
+              <th>Total Vaccinés</th>
+              <th>Doses Reçues</th>
+              <th>Doses Administrées</th>
+              <th>Doses Restantes</th>
+              <th>% Utilisation</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </section>
+    </div>
 
-    <section class="chart-section">
-      <h3>Répartition par catégorie de population</h3>
-      <canvas id="chartCategories" height="120"></canvas>
-    </section>
-
-    <section class="table-section" id="detailsSection" style="display:none;">
-      <h3>Détails par Établissement</h3>
-      <table id="tableDetails">
-        <thead>
-          <tr>
-            <th>Établissement</th>
-            <th>Total Vaccinés</th>
-            <th>Doses Reçues</th>
-            <th>Doses Administrées</th>
-            <th>Doses Restantes</th>
-            <th>% Utilisation</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </section>
-  </div>
-
-  <script type="module" src="scripts/dashboard.js"></script>
-</body>
+    <script type="module" src="scripts/dashboard.js"></script>
+  </body>
 </html>

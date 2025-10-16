@@ -3,11 +3,14 @@
    ========================== */
 * {
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-.error{
+.error {
   color: red;
   padding-top: 10px;
+  font-size: clamp(0.8rem, 2vw, 0.9rem);
 }
 
 body {
@@ -18,6 +21,7 @@ body {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
+  padding: 1rem;
 }
 
 /* ==========================
@@ -28,20 +32,22 @@ body {
   justify-content: center;
   align-items: center;
   width: 100%;
+  min-height: 100vh;
   padding: 1rem;
 }
 
 .login-card {
   background: white;
   border-radius: 20px;
-  padding: 3rem 2.5rem;
+  padding: clamp(1.5rem, 5vw, 3rem) clamp(1rem, 4vw, 2.5rem);
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-  width: 95%;
-  max-width: 520px;          /* bigger card */
+  width: 100%;
+  max-width: min(95%, 520px);
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin: auto;
 }
 
 /* ==========================
@@ -51,14 +57,15 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: clamp(1rem, 3vw, 1.5rem);
+  width: 100%;
 }
 
 .header .logo {
-  width: 120%;
-  max-width: 400px;          /* bigger logo */
+  width: 100%;
+  max-width: min(90%, 400px);
   height: auto;
-  margin-bottom: 1rem;
+  margin-bottom: clamp(0.8rem, 2vw, 1rem);
   object-fit: contain;
   transition: transform 0.3s ease;
 }
@@ -69,10 +76,12 @@ body {
 
 h3 {
   margin: 0;
-  font-size: clamp(1.3rem, 2.8vw, 1.8rem);
+  font-size: clamp(1.1rem, 4vw, 1.8rem);
   color: #004085;
   line-height: 1.4;
-  font-weight: 450;
+  font-weight: 500;
+  text-align: center;
+  width: 100%;
 }
 
 /* ==========================
@@ -84,13 +93,14 @@ h3 {
   flex-direction: column;
   align-items: stretch;
   text-align: left;
+  gap: 0.5rem;
 }
 
 label {
-  margin-top: 10px;
+  margin-top: clamp(0.5rem, 2vw, 0.625rem);
   font-weight: 500;
   color: #333;
-  font-size: 0.95rem;
+  font-size: clamp(0.85rem, 2.5vw, 0.95rem);
 }
 
 select,
@@ -99,16 +109,18 @@ button {
   width: 100%;
   box-sizing: border-box;
   border-radius: 10px;
-  font-size: 1rem;
+  font-size: clamp(0.9rem, 2.5vw, 1rem);
+  font-family: inherit;
 }
 
 /* Inputs and select */
 select,
 input[type="password"] {
-  padding: 12px;
+  padding: clamp(0.75rem, 2vw, 0.75rem);
   border: 1px solid #ccc;
-  margin-top: 5px;
+  margin-top: 0.25rem;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  background: white;
 }
 
 select:focus,
@@ -120,54 +132,146 @@ input[type="password"]:focus {
 
 /* Button */
 button {
-  margin-top: 20px;
-  padding: 14px;
+  margin-top: clamp(1rem, 3vw, 1.25rem);
+  padding: clamp(0.75rem, 2.5vw, 0.875rem);
   background: #007bff;
   color: white;
   border: none;
   border-radius: 10px;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s ease, transform 0.1s ease;
+  transition: all 0.2s ease;
+  min-height: 44px; /* Better touch targets on mobile */
 }
 
 button:hover {
   background: #0056b3;
-  transform: translateY(-1px);
+  transform: translateY(-2px);
 }
 
 button:active {
-  transform: translateY(1px);
+  transform: translateY(0);
 }
 
 /* ==========================
    Footer
    ========================== */
 footer {
-  margin-top: 30px;
+  margin-top: clamp(1.5rem, 4vw, 1.875rem);
   color: #888;
-  font-size: 0.85rem;
+  font-size: clamp(0.75rem, 2vw, 0.85rem);
   text-align: center;
+  width: 100%;
+  line-height: 1.4;
 }
 
 /* ==========================
-   Responsive adjustments
+   Enhanced Responsive adjustments
    ========================== */
-@media (max-width: 600px) {
+
+/* Tablets and small laptops */
+@media (max-width: 1024px) {
   .login-card {
-    padding: 2rem 1.5rem;
-    max-width: 90%;
+    max-width: min(95%, 480px);
   }
+}
 
+/* Mobile devices */
+@media (max-width: 768px) {
+  body {
+    padding: 0.5rem;
+  }
+  
+  .login-container {
+    padding: 0.5rem;
+  }
+  
+  .login-card {
+    border-radius: 16px;
+    max-width: 100%;
+  }
+  
   .header .logo {
-    max-width: 140px;
+    max-width: 280px;
   }
+}
 
-  h2 {
+/* Small mobile devices */
+@media (max-width: 480px) {
+  body {
+    padding: 0.25rem;
+    align-items: flex-start;
+    min-height: 100vh;
+    background: white;
+  }
+  
+  .login-container {
+    padding: 0;
+    min-height: 100vh;
+    align-items: flex-start;
+  }
+  
+  .login-card {
+    border-radius: 0;
+    box-shadow: none;
+    padding: 2rem 1.25rem;
+    min-height: 100vh;
+    justify-content: center;
+  }
+  
+  .header .logo {
+    max-width: 220px;
+  }
+  
+  h3 {
     font-size: 1.2rem;
   }
-
+  
   button {
-    font-size: 0.95rem;
+    min-height: 48px; /* Larger touch target for mobile */
+  }
+}
+
+/* Very small devices (Galaxy Fold, etc.) */
+@media (max-width: 320px) {
+  .login-card {
+    padding: 1.5rem 1rem;
+  }
+  
+  .header .logo {
+    max-width: 180px;
+  }
+  
+  h3 {
+    font-size: 1.1rem;
+  }
+}
+
+/* Landscape orientation for mobile */
+@media (max-height: 600px) and (orientation: landscape) {
+  .login-container {
+    padding: 0.5rem;
+  }
+  
+  .login-card {
+    padding: 1.5rem 2rem;
+    max-height: 95vh;
+    overflow-y: auto;
+  }
+  
+  .header {
+    margin-bottom: 0.8rem;
+  }
+  
+  .header .logo {
+    max-width: 150px;
+    margin-bottom: 0.5rem;
+  }
+}
+
+/* High-resolution displays */
+@media (min-resolution: 192dpi) {
+  .login-card {
+    border: 0.5px solid #e1e5eb;
   }
 }
