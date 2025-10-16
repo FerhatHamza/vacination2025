@@ -1,8 +1,18 @@
-import { getsetupCount, saveSetup } from './api.js';
+import { getsetupCount, saveSetup, saveDailyReport, getDailyTotal, fetchReports } from './api.js';
 import { logoutUser } from './auth.js';
 const apiBase = "https://vacination2025-api.ferhathamza17.workers.dev";
 checkAccess("coordinateur");
 
+const centresElement = document.getElementById("centres")
+const equipesElement = document.getElementById("equipes")
+const vaccinesElement = document.getElementById("vaccines")
+const saveDailyElement = document.getElementById("saveDaily")
+const totalVaccines = document.getElementById("totalVaccines")
+const administree = document.getElementById("administree")
+const restanteEle = document.getElementById("restante")
+const recue = document.getElementById("recue")
+
+var totalVa = 0;
 const logoutBtn = document.getElementById("logoutId");
 
 logoutBtn.addEventListener('click', () => {
@@ -14,18 +24,41 @@ const saveSetup2 = document.getElementById("saveSetup");
 
 document.addEventListener("DOMContentLoaded", () => {
   initPage();
+
+  const ids = [
+    "p65sain", "p65malade", "maladults", "malenfants",
+    "enceintes", "sante", "pelerins", "autres"
+  ];
+
+  // Loop through all input IDs and attach the same event listener
+  ids.forEach(id => {
+    const input = document.getElementById(id);
+    if (input) {
+      input.addEventListener("input", calcTotal); // "input" fires immediately on change
+    }
+  });
+});
+
+// save daily data
+saveDailyElement.addEventListener("click", () => {
+  saveDailyData();
 });
 const USER_KEY = "userSession";
-  const role = JSON.parse(localStorage.getItem(USER_KEY));
+const role = JSON.parse(localStorage.getItem(USER_KEY));
 
 saveSetup2.addEventListener("click", async () => {
-  const countSetup = await getsetupCount();
-  if(countSetup.total == 0) {
-    const res = await saveSetup(role.id, document.getElementById("centres").value,  document.getElementById("centres").equipes,  document.getElementById("vaccines").value)
-    if(res.success) { alert("ok") }
-  }else{
-    alert("not allowed");
+
+  const id = role.id;
+  const cent = centresElement.value;
+  const equip = document.getElementById("equipes").value;
+  const vacc = document.getElementById("vaccines").value;
+
+
+  const res = await saveSetup(id, cent, equip, vacc);
+  if (res.success) {
+    location.reload();
   }
+  else { console.log(res) }
 });
 
 function checkAccess(requiredRole) {
@@ -46,13 +79,39 @@ function checkAccess(requiredRole) {
   }
 }
 
-function initPage() {
+async function initPage() {
   checkAccess("coordinateur");
+  calcTotal();
+  loadHistory();
+  const res = await getsetupCount();
+  if (!res.exists) {
 
-  
+    centresElement.disabled = false;
+    equipesElement.disabled = false;
+    vaccinesElement.disabled = false;
+    saveSetup2.hidden = false;
+  } else {
+    centresElement.value = res.data.centres_count;
+    equipesElement.value = res.data.equipes_count;
+
+    centresElement.disabled = true;
+    equipesElement.disabled = true;
+    saveSetup2.hidden = true;
+  }
+
+  const res2 = await getDailyTotal();
+  if (res2.success) {
+    console.log(' the data is: ', res2.data);
+
+    totalVaccines.textContent = res2.data.grand_total == null ? '0' : res2.data.grand_total;
+    administree.value = res2.data.grand_total == null ? '0' : res2.data.grand_total;
+    totalVa = res2.data.grand_total;
+
+  }
+
   const USER_KEY = "userSession";
   const user = JSON.parse(localStorage.getItem(USER_KEY));
-  const etab = user.etab;
+  const etab = user.Etab;
   document.getElementById("etabName").textContent = etab;
   document.getElementById("today").textContent = new Date().toLocaleDateString("fr-DZ");
 
@@ -68,85 +127,119 @@ function initPage() {
     "EPH Guerrara": 200,
     "EPH Berriane": 200,
   };
-  console.log(etab);
-  document.getElementById("recue").value = predefined[etab] || 0;
 
+  document.getElementById("recue").value = predefined[etab] || 0;
+  vaccinesElement.value = predefined[etab] || 0;
+  vaccinesElement.disabled = true;
   // loadHistory();
 }
 
+
+
 function calcTotal() {
+
   const ids = [
     "p65sain", "p65malade", "maladults", "malenfants",
     "enceintes", "sante", "pelerins", "autres"
   ];
-  let total = ids.reduce((sum, id) => sum + (parseInt(document.getElementById(id).value) || 0), 0);
-  document.getElementById("totalVaccines").textContent = total;
 
-  const reçue = parseInt(document.getElementById("reçue").value);
-  const restante = reçue - total;
-  document.getElementById("administree").value = total;
-  document.getElementById("restante").value = restante >= 0 ? restante : 0;
+  // ✅ Calculate total vaccinated
+  let total = ids.reduce((sum, id) => {
+    const val = parseInt(document.getElementById(id)?.value) || 0;
+    return sum + val;
+  }, 0);
+
+  // ✅ Update total display
+  document.getElementById("totalVaccinesAj").textContent = total;
+
+  // ✅ Get input elements safely
+  const recueInput = document.getElementById("recue");
+  const administreeInput = document.getElementById("administree");
+  const restanteInput = document.getElementById("restante");
+  total += parseInt(document.getElementById('totalVaccines').textContent);
+  console.log('its call', parseInt(document.getElementById('totalVaccines').textContent));
+  // ✅ Parse values and update inputs
+  const recue = parseInt(recueInput?.value) || 0;
+  const restante = Math.max(0, recue - total);
+
+
+  if (administreeInput) administreeInput.value = total;
+  if (restanteInput) restanteInput.value = restante;
 }
 
-async function saveDailyData(e) {
-  e.preventDefault();
+async function saveDailyData() {
+
   const user = JSON.parse(localStorage.getItem("userSession"));
-  const etab = user.etab
+  const etab = user.Etab
   const date = new Date().toISOString().split("T")[0];
 
   const data = {
-    etablissement: etab,
-    date,
-    centres: parseInt(document.getElementById("centres").value || 0),
-    equipes: parseInt(document.getElementById("equipes").value || 0),
-    p65sain: parseInt(document.getElementById("p65sain").value || 0),
-    p65malade: parseInt(document.getElementById("p65malade").value || 0),
-    maladults: parseInt(document.getElementById("maladults").value || 0),
-    malenfants: parseInt(document.getElementById("malenfants").value || 0),
-    enceintes: parseInt(document.getElementById("enceintes").value || 0),
-    sante: parseInt(document.getElementById("sante").value || 0),
-    pelerins: parseInt(document.getElementById("pelerins").value || 0),
-    autres: parseInt(document.getElementById("autres").value || 0),
-    total: parseInt(document.getElementById("totalVaccines").textContent || 0),
-    reçue: parseInt(document.getElementById("reçue").value || 0),
-    administree: parseInt(document.getElementById("administree").value || 0),
-    restante: parseInt(document.getElementById("restante").value || 0),
+    user_id: user.id,
+    date: date,
+    age_65_no_chronic: parseInt(document.getElementById("p65sain").value || 0),
+    age_65_with_chronic: parseInt(document.getElementById("p65malade").value || 0),
+    chronic_adults: parseInt(document.getElementById("maladults").value || 0),
+    chronic_children: parseInt(document.getElementById("malenfants").value || 0),
+    pregnant_women: parseInt(document.getElementById("enceintes").value || 0),
+    health_staff: parseInt(document.getElementById("sante").value || 0),
+    pilgrims: parseInt(document.getElementById("pelerins").value || 0),
+    others: parseInt(document.getElementById("autres").value || 0),
+    total_vaccinated: parseInt(document.getElementById("recue").value || 0),
+    vaccines_administered: parseInt(document.getElementById("administree").value || 0),
   };
+  console.log('data "dd" :: ', data);
 
-  const res = await fetch(`${apiBase}/api/saveDaily`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
-
-  if (res.ok) {
+  const res = await saveDailyReport(data);
+  console.log(res);
+  if (res.success) {
     alert("Données enregistrées avec succès !");
+    location.reload();
     // loadHistory();
   } else {
-    alert("Erreur d’enregistrement.");
+    console.log(res);
+    // alert("Erreur d’enregistrement.");
   }
 }
 
-// async function loadHistory() {
-  
-//   const user = JSON.parse(localStorage.getItem("userSession"));
-//   const etab = user.etab;
-//   const res = await fetch(`${apiBase}/api/history?etab=${encodeURIComponent(etab)}`);
-//   const data = await res.json();
+async function loadHistory() {
+  try {
+    const response = await fetchReports();
+    const result = response.data;
 
-//   const tbody = document.querySelector("#historyTable tbody");
-//   tbody.innerHTML = "";
-//   data.forEach(d => {
-//     const tr = document.createElement("tr");
-//     tr.innerHTML = `
-//       <td>${d.date}</td>
-//       <td>${d.total}</td>
-//       <td>${d.administree}</td>
-//       <td>${d.restante}</td>
-//     `;
-//     tbody.appendChild(tr);
-//   });
-// }
+    console.log(result);
+    if (!response.success) {
+      alert('Failed to fetch reports');
+      return;
+    }
+
+    const tableBody = document.querySelector('#reportsTable tbody');
+    tableBody.innerHTML = ''; // clear previous data
+
+    result.forEach(report => {
+      const row = document.createElement('tr');
+
+      row.innerHTML = `
+            <td>${report.date || ''}</td>
+            <td>${report.user_id || ''}</td>
+            <td>${report.age_65_no_chronic || 0}</td>
+            <td>${report.age_65_with_chronic || 0}</td>
+            <td>${report.chronic_adults || 0}</td>
+            <td>${report.chronic_children || 0}</td>
+            <td>${report.pregnant_women || 0}</td>
+            <td>${report.health_staff || 0}</td>
+            <td>${report.pilgrims || 0}</td>
+            <td>${report.others || 0}</td>
+            <td>${report.total_vaccinated || 0}</td>
+            <td>${report.vaccines_administered || 0}</td>
+          `;
+
+      tableBody.appendChild(row);
+    });
+
+  } catch (err) {
+    console.error('Error fetching reports:', err);
+  }
+}
 
 function logout() {
   localStorage.clear();

@@ -46,14 +46,20 @@ export async function login(username, password) {
 // ----------------------------
 // DAILY REPORT
 // ----------------------------
-export async function saveDailyReport({ etab, date, centres, equipes, vaccines, quantiteAdministree }) {
+export async function saveDailyReport({ user_id, date, age_65_no_chronic, age_65_with_chronic, chronic_adults, chronic_children, pregnant_women, health_staff, pilgrims, others, total_vaccinated, vaccines_administered }) {
   return await request("/api/saveDaily", "POST", {
-    etab,
-    date,
-    centres,
-    equipes,
-    vaccines,
-    quantiteAdministree
+    user_id: user_id,
+    date: date,
+    age_65_no_chronic: age_65_no_chronic,
+    age_65_with_chronic: age_65_with_chronic,
+    chronic_adults: chronic_adults,
+    chronic_children: chronic_children,
+    pregnant_women: pregnant_women,
+    health_staff: health_staff,
+    pilgrims: pilgrims,
+    others: others,
+    total_vaccinated: total_vaccinated,
+    vaccines_administered: vaccines_administered
   });
 }
 
@@ -71,12 +77,24 @@ export async function getHistory(etab, limit = 30, offset = 0) {
 export async function getsetupCount() {
   return await request(`/api/setupCount`, "GET");
 }
-export async function saveSetup({ userId, centres, equipes, vaccines }) {
-  return await request("/api/setup", "POST", {
-    userId,
-    centres,
-    equipes,
-    vaccines,
+export async function fetchReports() {
+  return await request(`/api/getDailyReports`, "GET");
+}
+
+/*
+    GET DAILY TOTAL 
+*/
+
+export async function getDailyTotal() {
+  return await request(`/api/dailyReports/totals`, "GET");
+}
+export async function saveSetup(userId, centres, equipes, vaccines) {
+
+  return await request("/api/setupCount", "POST", {
+    user_id: userId,
+    centres_count: centres,
+    equipes_count: equipes,
+    vaccines_received: vaccines,
   });
 }
 
