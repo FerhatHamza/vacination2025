@@ -10,20 +10,28 @@
 <body>
   <div class="container">
     <header class="header-bar">
-      <img src="assets/logo.png" alt="Logo Santé" class="header-logo" />
-      <div>
-        <h2>Tableau de Bord Global – Vaccination Antigrippale 2025/2026</h2>
-        <p>Administration</p>
-      </div>
+      <h2>Tableau de Bord Global – Vaccination Antigrippale 2025/2026</h2>
       <button class="logout-btn" id="logoutId">Déconnexion</button>
     </header>
 
     <section class="stats-section">
       <div class="stats-grid">
-        <div class="card"><h4>Total des doses reçues</h4><p id="totalReçue">0</p></div>
-        <div class="card"><h4>Total des doses administrées</h4><p id="totalAdmin">0</p></div>
-        <div class="card"><h4>Total des doses restantes</h4><p id="totalRestante">0</p></div>
-        <div class="card"><h4>Total des personnes vaccinées</h4><p id="totalVaccines">0</p></div>
+        <div class="card clickable" id="cardReçue">
+          <h4>Total des doses reçues</h4>
+          <p id="totalReçue">0</p>
+        </div>
+        <div class="card clickable" id="cardAdmin">
+          <h4>Total des doses administrées</h4>
+          <p id="totalAdmin">0</p>
+        </div>
+        <div class="card clickable red-card" id="cardRestante">
+          <h4>Total des doses restantes</h4>
+          <p id="totalRestante">0</p>
+        </div>
+        <div class="card clickable" id="cardVaccines">
+          <h4>Total des personnes vaccinées</h4>
+          <p id="totalVaccines">0</p>
+        </div>
       </div>
     </section>
 
@@ -37,7 +45,7 @@
       <canvas id="chartCategories" height="120"></canvas>
     </section>
 
-    <section class="table-section">
+    <section class="table-section" id="detailsSection" style="display:none;">
       <h3>Détails par Établissement</h3>
       <table id="tableDetails">
         <thead>
@@ -55,7 +63,6 @@
     </section>
   </div>
 
-  
   <script type="module" src="scripts/dashboard.js"></script>
 </body>
 </html>
