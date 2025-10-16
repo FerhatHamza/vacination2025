@@ -88,3 +88,93 @@
   </script>
 </body>
 </html>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Saisie Journalière – Vaccination Antigrippale</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/daily.css" />
+</head>
+<body>
+  <div class="main-container">
+    <header class="header">
+      <img src="assets/logo.png" alt="Logo Santé" class="logo" />
+      <h1>Évaluation Vaccination Antigrippale 2025/2026</h1>
+      <p id="etabName">Centre de Santé Principal</p>
+    </header>
+
+    <section class="form-wrapper">
+      <form id="vaccinationForm" onsubmit="saveDailyData(event)" class="form-card">
+        <h2 class="title">Saisie Journalière</h2>
+
+        <div class="grid">
+          <div class="form-group">
+            <label for="centres">Centres vaccinateurs</label>
+            <input type="number" id="centres" name="centres" min="0" required />
+          </div>
+          <div class="form-group">
+            <label for="equipes">Équipes vaccinateurs</label>
+            <input type="number" id="equipes" name="equipes" min="0" required />
+          </div>
+        </div>
+
+        <h3 class="subtitle">Personnes vaccinées</h3>
+        <div class="grid">
+          <div class="form-group"><label>≥65 ans (sains)</label><input type="number" id="p65sain" value="0" oninput="calcTotal()"></div>
+          <div class="form-group"><label>≥65 ans (malades)</label><input type="number" id="p65malade" value="0" oninput="calcTotal()"></div>
+          <div class="form-group"><label>Chroniques (adultes)</label><input type="number" id="maladults" value="0" oninput="calcTotal()"></div>
+          <div class="form-group"><label>Chroniques (enfants)</label><input type="number" id="malenfants" value="0" oninput="calcTotal()"></div>
+          <div class="form-group"><label>Femmes enceintes</label><input type="number" id="enceintes" value="0" oninput="calcTotal()"></div>
+          <div class="form-group"><label>Personnel de santé</label><input type="number" id="sante" value="0" oninput="calcTotal()"></div>
+          <div class="form-group"><label>Pèlerins</label><input type="number" id="pelerins" value="0" oninput="calcTotal()"></div>
+          <div class="form-group"><label>Autres</label><input type="number" id="autres" value="0" oninput="calcTotal()"></div>
+        </div>
+
+        <div class="total-display">
+          <span>Total Vaccinés :</span> 
+          <strong id="totalVaccines">0</strong>
+        </div>
+
+        <h3 class="subtitle">Gestion des Doses</h3>
+        <div class="grid-3">
+          <div class="form-group"><label>Reçue</label><input type="number" id="recue" readonly></div>
+          <div class="form-group"><label>Administrée</label><input type="number" id="administree" readonly></div>
+          <div class="form-group"><label>Restante</label><input type="number" id="restante" readonly></div>
+        </div>
+
+        <button type="submit" class="save-btn">Enregistrer</button>
+      </form>
+    </section>
+  </div>
+
+  <!-- Confirmation animation -->
+  <div class="success-popup" id="successPopup">
+    <div class="checkmark">
+      <div class="checkmark-stem"></div>
+      <div class="checkmark-kick"></div>
+    </div>
+    <p>Données enregistrées avec succès !</p>
+  </div>
+
+  <script>
+    function calcTotal() {
+      const ids = ["p65sain","p65malade","maladults","malenfants","enceintes","sante","pelerins","autres"];
+      let total = ids.reduce((sum, id) => sum + (parseInt(document.getElementById(id).value) || 0), 0);
+      document.getElementById("totalVaccines").textContent = total;
+      document.getElementById("administree").value = total;
+      let recue = parseInt(document.getElementById("recue").value) || 500; // exemple
+      document.getElementById("recue").value = recue;
+      document.getElementById("restante").value = recue - total;
+    }
+
+    function saveDailyData(e) {
+      e.preventDefault();
+      const popup = document.getElementById("successPopup");
+      popup.classList.add("show");
+      setTimeout(() => popup.classList.remove("show"), 2500);
+    }
+  </script>
+</body>
+</html>
