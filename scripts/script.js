@@ -1,6 +1,6 @@
 import { loginUser, logoutUser, getCurrentUser, isAuthenticated } from "./auth.js";
 const loginBtn = document.getElementById("loginBtn");
-const errorP = document.getElementById("error");
+const errorP = document.getElementById("errorId");
 
 loginBtn.addEventListener('click', login)
 
@@ -17,14 +17,21 @@ async function login() {
     console.log(etablissement, password);
     const user = await loginUser(etablissement, password);
     console.log("✅ Logged in:", user);
+    if (user.role === "admin") {
+      window.location.href = "dashboard.html";
+    } else {
+      window.location.href = "daily.html";
+    }
+
   } catch (error) {
-    errorP.textContent  = error.message;
+    errorP.textContent = error.message;
     console.error("❌ Login failed:", error.message);
   }
-  
+
 }
 
 function checkAccess(requiredRole) {
+  console.log("its verify");
   const role = localStorage.getItem("role");
   const etab = localStorage.getItem("etablissement");
 
