@@ -14,8 +14,8 @@ const saveSetup = document.getElementById("saveSetup");
 document.addEventListener("DOMContentLoaded", () => {
   initPage();
 });
-saveSetup.addEventListener("click", () => {
-  const countSetup = getsetupCount();
+saveSetup.addEventListener("click", async () => {
+  const countSetup = await getsetupCount();
   console.log(countSetup);
 });
 
