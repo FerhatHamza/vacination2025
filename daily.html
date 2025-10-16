@@ -10,8 +10,17 @@
 <body>
   <main class="center-container">
     <form id="vaccinationForm" onsubmit="saveDailyData(event)" class="form-card">
+      
       <h1>Évaluation Vaccination Antigrippale 2025/2026</h1>
-      <h2>Saisie Journalière</h2>
+      
+      <div class="header-left">
+          <h2>Évaluation Vaccination Antigrippale 2025/2026</h2>
+          <p id="etabName"></p>
+        </div>
+        <div class="header-right">
+          <span id="today"></span>
+          <button class="logout-btn" onclick="logout()"> Déconnexion</button>
+      </div>
 
       <div class="grid">
         <div class="form-group">
@@ -29,7 +38,7 @@
         <button id="saveSetup" type="submit" class="SetupSave-btn">Enregistrer</button>
       </div>
 
-      <h3>Personnes vaccinées</h3>
+      <h3>Saisie Journalière - Personnes vaccinées</h3>
       <div class="grid">
         <div class="form-group"><label>≥65 ans (sans maladie chronique)</label><input type="number" id="p65sain" value="0" oninput="calcTotal()"></div>
         <div class="form-group">  <label>≥65 ans (avec maladie chronique)</label><input type="number" id="p65malade" value="0" oninput="calcTotal()"></div>
