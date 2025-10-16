@@ -210,30 +210,7 @@ input:focus {
   }
 }
 
-/* HEADER CONTAINER */
-.header-left, .header-right {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
 
-/* Layout the two sides */
-.header-left {
-  text-align: left;
-}
-
-.header-right {
-  text-align: right;
-  align-items: flex-end;
-}
-
-/* Title */
-.header-left h2 {
-  font-size: 1.4rem;
-  font-weight: 600;
-  color: #004085;
-  margin: 0;
-}
 
 /* Establishment name */
 #etabName {
