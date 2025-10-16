@@ -219,8 +219,8 @@ async function loadHistory() {
       const row = document.createElement('tr');
 
       row.innerHTML = `
-            <td>${report.date || ''}</td>
             <td>${report.user_id || ''}</td>
+            <td>${report.date || ''}</td>
             <td>${report.age_65_no_chronic || 0}</td>
             <td>${report.age_65_with_chronic || 0}</td>
             <td>${report.chronic_adults || 0}</td>
@@ -229,8 +229,7 @@ async function loadHistory() {
             <td>${report.health_staff || 0}</td>
             <td>${report.pilgrims || 0}</td>
             <td>${report.others || 0}</td>
-            <td>${report.total_vaccinated || 0}</td>
-            <td>${report.vaccines_administered || 0}</td>
+            <td>${report.total_vaccinated - report.vaccines_administered || 0}</td>
           `;
 
       tableBody.appendChild(row);
