@@ -39,6 +39,9 @@ async function request(endpoint, method = "GET", body = null) {
   }
 }
 
+export async function login(username, password) {
+  return await request("/api/login", "POST", { username, password });
+}
 
 // ----------------------------
 // DAILY REPORT
