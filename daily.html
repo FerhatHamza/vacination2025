@@ -6,264 +6,69 @@
     <title>Saisie Journalière – Vaccination Antigrippale</title>
     <link rel="stylesheet" href="assets/daily.css" />
   </head>
+
   <body onload="initPage()">
-    <div class="container">
-      <header class="header-bar">
-        <img src="assets/logo.png" alt="Logo Santé" class="header-logo" />
-        <div class="header-info">
-          <h2>Évaluation Vaccination Antigrippale 2025/2026</h2>
-          <p id="etabName">Centre de Santé Principal</p>
+    <div class="main-container">
+      <header class="top-header">
+        <img src="assets/logo.png" alt="Logo Santé" class="logo" />
+        <div class="header-text">
+          <h1>Évaluation Vaccination Antigrippale<br /><span>Campagne 2025 / 2026</span></h1>
+          <p id="etabName">Établissement : EPSP Berriane</p>
         </div>
-        <button class="logout-btn" onclick="logout()">Déconnexion</button>
+        <button class="logout" onclick="logout()">Déconnexion</button>
       </header>
 
-      <section class="form-section">
-        <h3>Saisie Journalière</h3>
-        <p class="date-display">
-          <b>Date:</b> <span id="today">15 Octobre 2025</span>
-        </p>
+      <form id="vaccinationForm" class="form-card" onsubmit="saveDailyData(event)">
+        <h2>🗓️ Saisie Journalière</h2>
+        <p class="form-date"><b>Date :</b> <span id="today">15 Octobre 2025</span></p>
 
-        <form id="vaccinationForm" onsubmit="saveDailyData(event)">
-          <div class="grid-2">
-            <div class="form-group">
-              <label for="centres">Nombre de centres vaccinateurs</label>
-              <input
-                type="number"
-                id="centres"
-                name="centres"
-                min="0"
-                required
-              />
-            </div>
-            <div class="form-group">
-              <label for="equipes">Nombre d'équipes vaccinateurs</label>
-              <input
-                type="number"
-                id="equipes"
-                name="equipes"
-                min="0"
-                required
-              />
-            </div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="centres">Centres vaccinateurs</label>
+            <input type="number" id="centres" min="0" required />
           </div>
-
-          <h4>Personnes vaccinées</h4>
-          <div class="grid-2">
-            <div class="form-group">
-              <label for="p65sain">≥65 ans sans maladie chronique</label>
-              <input
-                type="number"
-                id="p65sain"
-                name="p65sain"
-                min="0"
-                value="0"
-                oninput="calcTotal()"
-              />
-            </div>
-            <div class="form-group">
-              <label for="p65malade">≥65 ans avec maladie chronique</label>
-              <input
-                type="number"
-                id="p65malade"
-                name="p65malade"
-                min="0"
-                value="0"
-                oninput="calcTotal()"
-              />
-            </div>
-            <div class="form-group">
-              <label for="maladults">Maladies chroniques (adultes)</label>
-              <input
-                type="number"
-                id="maladults"
-                name="maladults"
-                min="0"
-                value="0"
-                oninput="calcTotal()"
-              />
-            </div>
-            <div class="form-group">
-              <label for="malenfants">Maladies chroniques (enfants)</label>
-              <input
-                type="number"
-                id="malenfants"
-                name="malenfants"
-                min="0"
-                value="0"
-                oninput="calcTotal()"
-              />
-            </div>
-            <div class="form-group">
-              <label for="enceintes">Femmes enceintes</label>
-              <input
-                type="number"
-                id="enceintes"
-                name="enceintes"
-                min="0"
-                value="0"
-                oninput="calcTotal()"
-              />
-            </div>
-            <div class="form-group">
-              <label for="sante">Personnel de santé</label>
-              <input
-                type="number"
-                id="sante"
-                name="sante"
-                min="0"
-                value="0"
-                oninput="calcTotal()"
-              />
-            </div>
-            <div class="form-group">
-              <label for="pelerins">Pèlerins</label>
-              <input
-                type="number"
-                id="pelerins"
-                name="pelerins"
-                min="0"
-                value="0"
-                oninput="calcTotal()"
-              />
-            </div>
-            <div class="form-group">
-              <label for="autres">Autres</label>
-              <input
-                type="number"
-                id="autres"
-                name="autres"
-                min="0"
-                value="0"
-                oninput="calcTotal()"
-              />
-            </div>
+          <div class="form-group">
+            <label for="equipes">Équipes vaccinateurs</label>
+            <input type="number" id="equipes" min="0" required />
           </div>
-
-          <div class="total-box">
-            <strong>Total Vaccinés : <span id="totalVaccines">0</span></strong>
-          </div>
-
-          <h4>Gestion des Doses</h4>
-          <div class="grid-3">
-            <div class="form-group">
-              <label for="recue">Quantité reçue (dose)</label>
-              <input type="number" id="recue" name="recue" readonly />
-            </div>
-            <div class="form-group">
-              <label for="administree">Quantité administrée</label>
-              <input
-                type="number"
-                id="administree"
-                name="administree"
-                readonly
-              />
-            </div>
-            <div class="form-group">
-              <label for="restante">Quantité restante</label>
-              <input type="number" id="restante" name="restante" readonly />
-            </div>
-          </div>
-
-          <button type="submit" class="save-btn">💾 Enregistrer</button>
-        </form>
-      </section>
-
-      <section class="summary-section">
-        <h3>Résumé des Vaccinations</h3>
-        <table class="summary-table">
-          <thead>
-            <tr>
-              <th>Nombre de Personnes Vaccinées</th>
-              <th>Nombre de personnes vaccinées</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Personnes Agées de 65 ans et plus</td>
-              <td id="summary-65">0</td>
-            </tr>
-            <tr>
-              <td>Maladies Chroniques (adultes)</td>
-              <td id="summary-maladults">0</td>
-            </tr>
-            <tr>
-              <td>Maladies Chroniques (enfants)</td>
-              <td id="summary-malenfants">0</td>
-            </tr>
-            <tr>
-              <td>Femmes enceintes</td>
-              <td id="summary-enceintes">0</td>
-            </tr>
-            <tr>
-              <td>Personnels de santé</td>
-              <td id="summary-sante">0</td>
-            </tr>
-            <tr>
-              <td>Pèlerins</td>
-              <td id="summary-pelerins">0</td>
-            </tr>
-            <tr class="total-row">
-              <td>Total adultes</td>
-              <td id="summary-total-adultes">0</td>
-            </tr>
-            <tr class="total-row">
-              <td>Total enfants</td>
-              <td id="summary-total-enfants">0</td>
-            </tr>
-            <tr class="section-header">
-              <td colspan="2">Gestion des doses</td>
-            </tr>
-            <tr>
-              <td>Quantité de vaccins reçue</td>
-              <td id="summary-recue">0</td>
-            </tr>
-            <tr>
-              <td>Quantité de vaccins administrée</td>
-              <td id="summary-administree">0</td>
-            </tr>
-            <tr>
-              <td>Quantité restante de vaccins</td>
-              <td id="summary-restante">0</td>
-            </tr>
-          </tbody>
-        </table>
-      </section>
-
-      <section class="history-section">
-        <h3>Historique des saisies</h3>
-        <div class="table-container">
-          <table id="historyTable">
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Total Vaccinés</th>
-                <th>Doses Administrées</th>
-                <th>Restantes</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>14/10/2025</td>
-                <td>145</td>
-                <td>150</td>
-                <td>350</td>
-              </tr>
-              <tr>
-                <td>13/10/2025</td>
-                <td>128</td>
-                <td>130</td>
-                <td>200</td>
-              </tr>
-              <tr>
-                <td>12/10/2025</td>
-                <td>112</td>
-                <td>115</td>
-                <td>70</td>
-              </tr>
-            </tbody>
-          </table>
         </div>
-      </section>
+
+        <h3>👩‍⚕️ Personnes vaccinées</h3>
+        <div class="grid-2">
+          <div class="form-group"><label>≥65 ans sans maladie chronique</label><input type="number" id="p65sain" value="0" min="0" oninput="calcTotal()" /></div>
+          <div class="form-group"><label>≥65 ans avec maladie chronique</label><input type="number" id="p65malade" value="0" min="0" oninput="calcTotal()" /></div>
+          <div class="form-group"><label>Maladies chroniques (adultes)</label><input type="number" id="maladults" value="0" min="0" oninput="calcTotal()" /></div>
+          <div class="form-group"><label>Maladies chroniques (enfants)</label><input type="number" id="malenfants" value="0" min="0" oninput="calcTotal()" /></div>
+          <div class="form-group"><label>Femmes enceintes</label><input type="number" id="enceintes" value="0" min="0" oninput="calcTotal()" /></div>
+          <div class="form-group"><label>Personnel de santé</label><input type="number" id="sante" value="0" min="0" oninput="calcTotal()" /></div>
+          <div class="form-group"><label>Pèlerins</label><input type="number" id="pelerins" value="0" min="0" oninput="calcTotal()" /></div>
+          <div class="form-group"><label>Autres</label><input type="number" id="autres" value="0" min="0" oninput="calcTotal()" /></div>
+        </div>
+
+        <div class="total">
+          <strong>Total Vaccinés : <span id="totalVaccines">0</span></strong>
+        </div>
+
+        <h3>💉 Gestion des Doses</h3>
+        <div class="grid-3">
+          <div class="form-group">
+            <label>Quantité reçue (dose)</label>
+            <input type="number" id="recue" readonly />
+          </div>
+          <div class="form-group">
+            <label>Quantité administrée</label>
+            <input type="number" id="administree" readonly />
+          </div>
+          <div class="form-group">
+            <label>Quantité restante</label>
+            <input type="number" id="restante" readonly />
+          </div>
+        </div>
+
+        <button type="submit" class="save-btn">💾 Enregistrer la Journée</button>
+      </form>
     </div>
+
+    <script src="assets/daily.js"></script>
   </body>
 </html>
