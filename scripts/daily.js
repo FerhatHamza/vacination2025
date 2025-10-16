@@ -81,7 +81,8 @@ function calcTotal() {
 
 async function saveDailyData(e) {
   e.preventDefault();
-  const etab = localStorage.getItem("etablissement");
+  const user = JSON.parse(localStorage.getItem(USER_KEY));
+  const etab = user.etab
   const date = new Date().toISOString().split("T")[0];
 
   const data = {
@@ -118,7 +119,9 @@ async function saveDailyData(e) {
 }
 
 async function loadHistory() {
-  const etab = localStorage.getItem("etablissement");
+  
+  const user = JSON.parse(localStorage.getItem(USER_KEY));
+  const etab = user.etab;
   const res = await fetch(`${apiBase}/api/history?etab=${encodeURIComponent(etab)}`);
   const data = await res.json();
 
