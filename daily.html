@@ -54,9 +54,18 @@
           <div class="form-group"><label>Restante</label><input type="number" id="restante" readonly></div>
         </div>
 
-        <button type="submit" class="save-btn">💾 Enregistrer</button>
+        <button type="submit" class="save-btn">Enregistrer</button>
       </form>
     </section>
+  </div>
+
+  <!-- Confirmation animation -->
+  <div class="success-popup" id="successPopup">
+    <div class="checkmark">
+      <div class="checkmark-stem"></div>
+      <div class="checkmark-kick"></div>
+    </div>
+    <p>Données enregistrées avec succès !</p>
   </div>
 
   <script>
@@ -72,7 +81,9 @@
 
     function saveDailyData(e) {
       e.preventDefault();
-      alert("✅ Données enregistrées avec succès !");
+      const popup = document.getElementById("successPopup");
+      popup.classList.add("show");
+      setTimeout(() => popup.classList.remove("show"), 2500);
     }
   </script>
 </body>
