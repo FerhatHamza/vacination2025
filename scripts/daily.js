@@ -1,4 +1,4 @@
-import { getsetupCount } from './api.js';
+import { getsetupCount, saveSetup } from './api.js';
 import { logoutUser } from './auth.js';
 const apiBase = "https://vacination2025-api.ferhathamza17.workers.dev";
 checkAccess("coordinateur");
@@ -15,10 +15,16 @@ const saveSetup = document.getElementById("saveSetup");
 document.addEventListener("DOMContentLoaded", () => {
   initPage();
 });
+const USER_KEY = "userSession";
+  const role = JSON.parse(localStorage.getItem(USER_KEY));
+
 saveSetup.addEventListener("click", async () => {
   const countSetup = await getsetupCount();
   if(countSetup.total == 0) {
-    console.log("ok");
+    const res = await saveSetup(role.id, document.getElementById("centres").value,  document.getElementById("centres").equipes,  document.getElementById("vaccines").value)
+    if(res.success) { alert("ok") }
+  }else{
+    alert("not allowed");
   }
 });
 
