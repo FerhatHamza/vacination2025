@@ -99,7 +99,7 @@ async function initPage() {
     saveSetup2.hidden = true;
   }
 
-  const res2 = await getDailyTotal();
+  const res2 = await getDailyTotal(role.id);
   if (res2.success) {
     console.log(' the data is: ', res2.data);
 

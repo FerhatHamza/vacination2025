@@ -85,8 +85,8 @@ export async function fetchReports(user_id) {
     GET DAILY TOTAL 
 */
 
-export async function getDailyTotal() {
-  return await request(`/api/dailyReports/totals`, "GET");
+export async function getDailyTotal(userId) {
+  return await request(`/api/dailyReports/totals?user_id=${userId}`, "GET");
 }
 export async function saveSetup(userId, centres, equipes, vaccines) {
 

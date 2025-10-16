@@ -1,251 +1,84 @@
 export default {
   async fetch(request, env) {
+    const db = env.DB;
     const url = new URL(request.url);
     const path = url.pathname;
     const method = request.method;
 
-    // Database reference
-    const db = env.DB;
-    
-    // CORS headers for cross-origin requests
+    // ✅ CORS setup
     const corsHeaders = {
-      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Origin": "*", // or "http://127.0.0.1:5500" if you want to restrict
       "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
       "Access-Control-Allow-Headers": "Content-Type, Authorization",
-      "Content-Type": "application/json"
     };
 
-    // Handle preflight requests
+    // ✅ Preflight handler (important!)
     if (method === "OPTIONS") {
-      return new Response(null, { headers: corsHeaders });
+      return new Response("OK", { headers: corsHeaders });
     }
 
-    // Helper to send JSON responses
-    const json = (data, status = 200) => 
-      new Response(JSON.stringify(data), { 
-        status, 
-        headers: corsHeaders 
+    // ✅ Helper for JSON response
+    function json(data, status = 200) {
+      return new Response(JSON.stringify(data), {
+        status,
+        headers: {
+          "Content-Type": "application/json",
+          ...corsHeaders,
+        },
       });
-
-    // Helper for error responses
-    const error = (message, status = 400) => 
-      json({ error: message, success: false }, status);
-
-    // Parse request body with validation
-    async function parseBody(request) {
-      try {
-        const contentType = request.headers.get("content-type") || "";
-        if (!contentType.includes("application/json")) {
-          throw new Error("Invalid content type");
-        }
-        return await request.json();
-      } catch (err) {
-        throw new Error("Invalid JSON body");
-      }
     }
 
-    // Validate required fields
-    function validateFields(body, requiredFields) {
-      const missing = requiredFields.filter(field => 
-        body[field] === undefined || body[field] === null || body[field] === ""
-      );
-      
-      if (missing.length > 0) {
-        throw new Error(`Missing required fields: ${missing.join(", ")}`);
-      }
+    function error(message, status = 400) {
+      return json({ success: false, error: message }, status);
     }
 
     try {
-      // --------------------------
-      // LOGIN ENDPOINT
-      // --------------------------
+      /*
+            LOGIN API 
+      */
       if (path === "/api/login" && method === "POST") {
-        const body = await parseBody(request);
-        validateFields(body, ["username", "password"]);
-
+        const body = await request.json();
         const { username, password } = body;
 
-        // In production, you should hash passwords and compare hashes
+        if (!username || !password) {
+          return json({ error: "username and password required" }, 400);
+        }
+
+        // Look up the user
         const user = await db
-          .prepare("SELECT id, username, role, etab FROM users WHERE username = ? AND password = ?")
-          .bind(username, password)
+          .prepare("SELECT * FROM users WHERE username = ?")
+          .bind(username)
           .first();
 
         if (!user) {
-          return error("Utilisateur ou mot de passe invalide", 401);
+          return json({ error: "User not found" }, 404);
         }
 
-        // Log login attempt for security
-        await db
-          .prepare("INSERT INTO auth_logs (username, success, timestamp) VALUES (?, ?, ?)")
-          .bind(username, 1, new Date().toISOString())
-          .run();
-
-        return json({
-          success: true,
-          user: {
-            id: user.id,
-            username: user.username,
-            role: user.role,
-            etab: user.etab,
-          }
-        });
-      }
-
-      // --------------------------
-      // SAVE DAILY REPORT
-      // --------------------------
-      if (path === "/api/saveDaily" && method === "POST") {
-        const body = await parseBody(request);
-        validateFields(body, ["etab", "date", "centres", "equipes", "vaccines"]);
-
-        const {
-          etab,
-          date,
-          centres,
-          equipes,
-          vaccines,
-          quantiteAdministree = 0,
-        } = body;
-
-        // Validate date format
-        if (!isValidDate(date)) {
-          return error("Format de date invalide. Utilisez YYYY-MM-DD");
+        // Check password (for demo purposes only, no hashing)
+        if (user.password !== password) {
+          return json({ error: "Invalid password" }, 401);
         }
 
-        // Validate numbers are positive
-        if (centres < 0 || equipes < 0 || quantiteAdministree < 0) {
-          return error("Les nombres ne peuvent pas être négatifs");
-        }
-
-        // Validate vaccines object structure
-        if (!isValidVaccinesData(vaccines)) {
-          return error("Données de vaccination invalides");
-        }
-
-        // Calculate total vaccines from the data
-        const totalVaccines = Object.values(vaccines).reduce((sum, count) => 
-          sum + (Number(count) || 0), 0
-        );
-
-        // Check if existing entry for that day
-        const existing = await db
-          .prepare("SELECT id FROM vaccination WHERE etab = ? AND date = ?")
-          .bind(etab, date)
-          .first();
-
-        try {
-          if (existing) {
-            await db
-              .prepare(
-                `UPDATE vaccination SET 
-                  centres = ?, equipes = ?, data = ?, quantiteAdministree = ?, updated_at = ?
-                WHERE id = ?`
-              )
-              .bind(
-                centres,
-                equipes,
-                JSON.stringify(vaccines),
-                quantiteAdministree,
-                new Date().toISOString(),
-                existing.id
-              )
-              .run();
-          } else {
-            await db
-              .prepare(
-                `INSERT INTO vaccination (etab, date, centres, equipes, data, quantiteAdministree, created_at)
-                 VALUES (?, ?, ?, ?, ?, ?, ?)`
-              )
-              .bind(
-                etab, 
-                date, 
-                centres, 
-                equipes, 
-                JSON.stringify(vaccines), 
-                quantiteAdministree,
-                new Date().toISOString()
-              )
-              .run();
-          }
-
-          // Log the data modification
-          await db
-            .prepare("INSERT INTO data_logs (etab, date, action, timestamp) VALUES (?, ?, ?, ?)")
-            .bind(etab, date, existing ? "UPDATE" : "CREATE", new Date().toISOString())
-            .run();
-
-          return json({ 
-            success: true, 
-            message: existing ? "Rapport mis à jour" : "Rapport enregistré",
-            totalVaccines 
-          });
-
-        } catch (dbError) {
-          console.error("Database error:", dbError);
-          return error("Erreur de base de données lors de la sauvegarde", 500);
-        }
-      }
-
-      // --------------------------
-      // GET HISTORY FOR ONE ETAB
-      // --------------------------
-      if (path === "/api/history" && method === "GET") {
-        const etab = url.searchParams.get("etab");
-        
-        if (!etab) {
-          return error("Paramètre 'etab' requis");
-        }
-
-        const limit = Math.min(parseInt(url.searchParams.get("limit")) || 30, 100); // Max 100 records
-        const offset = parseInt(url.searchParams.get("offset")) || 0;
-
-        try {
-          const rows = await db
-            .prepare("SELECT * FROM vaccination WHERE etab = ? ORDER BY date DESC LIMIT ? OFFSET ?")
-            .bind(etab, limit, offset)
-            .all();
-
-          // Parse JSON data for each row
-          const history = (rows.results || []).map(row => ({
-            ...row,
-            data: JSON.parse(row.data)
-          }));
-
-          // Get total count for pagination
-          const countResult = await db
-            .prepare("SELECT COUNT(*) as total FROM vaccination WHERE etab = ?")
-            .bind(etab)
-            .first();
-
-          return json({
+        // Successful login
+        return json(
+          {
             success: true,
-            data: history,
-            pagination: {
-              total: countResult.total,
-              limit,
-              offset
-            }
-          });
-
-        } catch (dbError) {
-          console.error("Database error:", dbError);
-          return error("Erreur lors de la récupération de l'historique", 500);
-        }
+            message: "Login successful",
+            user: { id: user.id, name: user.name, role: user.role, Etab: user.etab },
+          },
+          200
+        );
       }
 
-      // --------------------------
-      // ADMIN GLOBAL STATS
-      // --------------------------
       if (path === "/api/admin/stats" && method === "GET") {
-        // Authorization check - in production, add JWT verification
-        const authHeader = request.headers.get("Authorization");
-        if (!authHeader || !authHeader.startsWith("Bearer ")) {
-          return error("Accès non autorisé", 401);
-        }
+        // --- Check Authorization ---
+        // const authHeader = request.headers.get("Authorization");
+        // if (!authHeader || !authHeader.startsWith("Bearer ")) {
+        //   return error("Accès non autorisé", 401);
+        // }
 
-        // Fixed received doses - consider moving to database configuration
-        const reçues = {
+        // --- Static Received Doses per Establishment ---
+        const recues = {
           "EHS Ghardaia": 200,
           "EPSP Ghardaia": 4000,
           "EPSP Metlili": 2000,
@@ -254,158 +87,280 @@ export default {
           "EPH Ghardaia": 400,
           "EPH Metlili": 200,
           "EPH Guerrara": 200,
-          "EPH Berriane": 200,
+          "EPH Berriane": 200
         };
 
-        try {
-          const rows = await db.prepare("SELECT * FROM vaccination").all();
-          const stats = {};
+        // --- Get all rows from vaccination table ---
+        const rows = await db.prepare("SELECT * FROM vaccination").all();
+        console.log('1 :: ');
+        const stats = {};
+        const categories = {
+          "≥65 ans sains": 0,
+          "≥65 ans malades": 0,
+          "Chroniques adultes": 0,
+          "Chroniques enfants": 0,
+          "Femmes enceintes": 0,
+          "Santé": 0,
+          "Pèlerins": 0,
+          "Autres": 0
+        };
 
-          rows.results.forEach(r => {
-            try {
-              const data = JSON.parse(r.data);
-              const etab = r.etab;
-              const total = Object.values(data).reduce((a, b) => a + (Number(b) || 0), 0);
+        // --- Loop over rows ---
+        for (const r of rows.results || []) {
+          try {
+            const data = JSON.parse(r.data || "{}");
+            const etab = r.etab || "Inconnu";
+            const total = Object.values(data).reduce(
+              (a, b) => a + (Number(b) || 0),
+              0
+            );
 
-              if (!stats[etab]) {
-                stats[etab] = {
-                  total: 0,
-                  administree: 0,
-                  centres: 0,
-                  equipes: 0
-                };
-              }
-
-              stats[etab].total += total;
-              stats[etab].administree += Number(r.quantiteAdministree || 0);
-              stats[etab].centres += Number(r.centres || 0);
-              stats[etab].equipes += Number(r.equipes || 0);
-            } catch (parseError) {
-              console.error("Error parsing data for row:", r.id, parseError);
+            if (!stats[etab]) {
+              stats[etab] = {
+                total: 0,
+                administree: 0,
+                centres: 0,
+                equipes: 0
+              };
             }
-          });
 
-          const etabs = Object.keys(reçues).map(name => {
-            const total = stats[name]?.total || 0;
-            const administree = stats[name]?.administree || 0;
-            const reçue = reçues[name];
-            const restante = Math.max(0, reçue - administree);
-            const utilisation = reçue > 0 ? Math.round((administree / reçue) * 100) : 0;
-            
-            return { 
-              nom: name, 
-              total, 
-              reçue, 
-              administree, 
-              restante,
-              utilisation,
-              centres: stats[name]?.centres || 0,
-              equipes: stats[name]?.equipes || 0
-            };
-          });
+            stats[etab].total += total;
+            stats[etab].administree += Number(r.quantiteAdministree || 0);
+            stats[etab].centres += Number(r.centres || 0);
+            stats[etab].equipes += Number(r.equipes || 0);
 
-          // Aggregate categories with proper field mapping
-          const categories = {
-            "≥65 ans sains": 0,
-            "≥65 ans malades": 0,
-            "Chroniques adultes": 0,
-            "Chroniques enfants": 0,
-            "Femmes enceintes": 0,
-            "Santé": 0,
-            "Pèlerins": 0,
-            "Autres": 0,
+            // --- Category accumulation ---
+            categories["≥65 ans sains"] += Number(data.p65sain || data.age65sain || 0);
+            categories["≥65 ans malades"] += Number(data.p65malade || data.age65malade || 0);
+            categories["Chroniques adultes"] += Number(data.maladults || data.chroniquesAdultes || 0);
+            categories["Chroniques enfants"] += Number(data.malenfants || data.chroniquesEnfants || 0);
+            categories["Femmes enceintes"] += Number(data.enceintes || data.femmes || 0);
+            categories["Santé"] += Number(data.sante || 0);
+            categories["Pèlerins"] += Number(data.pelerins || 0);
+            categories["Autres"] += Number(data.autres || 0);
+          } catch (parseError) {
+            console.error("Error parsing data for row:", r.id, parseError);
+          }
+        }
+
+        // --- Calculate establishment stats ---
+        const etabs = Object.keys(recues).map((name) => {
+          const total = stats[name]?.total || 0;
+          const administree = stats[name]?.administree || 0;
+          const recue = recues[name];
+          const restante = Math.max(0, recue - administree);
+          const utilisation = recue > 0 ? Math.round((administree / recue) * 100) : 0;
+          return {
+            nom: name,
+            total,
+            recue,
+            administree,
+            restante,
+            utilisation,
+            centres: stats[name]?.centres || 0,
+            equipes: stats[name]?.equipes || 0
           };
+        });
 
-          rows.results.forEach(r => {
-            try {
-              const d = JSON.parse(r.data);
-              categories["≥65 ans sains"] += Number(d.p65sain || d.age65sain || 0);
-              categories["≥65 ans malades"] += Number(d.p65malade || d.age65malade || 0);
-              categories["Chroniques adultes"] += Number(d.maladults || d.chroniquesAdultes || 0);
-              categories["Chroniques enfants"] += Number(d.malenfants || d.chroniquesEnfants || 0);
-              categories["Femmes enceintes"] += Number(d.enceintes || d.femmes || 0);
-              categories["Santé"] += Number(d.sante || 0);
-              categories["Pèlerins"] += Number(d.pelerins || 0);
-              categories["Autres"] += Number(d.autres || 0);
-            } catch (parseError) {
-              console.error("Error parsing categories for row:", r.id);
-            }
-          });
+        // --- Totals ---
+        const totalRecue = Object.values(recues).reduce((a, b) => a + b, 0);
+        const totalAdmin = etabs.reduce((a, b) => a + b.administree, 0);
+        const totalRestante = Math.max(0, totalRecue - totalAdmin);
+        const totalVaccines = etabs.reduce((a, b) => a + b.total, 0);
+        const totalUtilisation =
+          totalRecue > 0 ? Math.round((totalAdmin / totalRecue) * 100) : 0;
 
-          const totalReçue = Object.values(reçues).reduce((a, b) => a + b, 0);
-          const totalAdmin = etabs.reduce((a, b) => a + b.administree, 0);
-          const totalRestante = Math.max(0, totalReçue - totalAdmin);
-          const totalVaccines = etabs.reduce((a, b) => a + b.total, 0);
-          const totalUtilisation = totalReçue > 0 ? Math.round((totalAdmin / totalReçue) * 100) : 0;
-
-          return json({
-            success: true,
-            summary: {
-              totalReçue,
-              totalAdmin,
-              totalRestante,
-              totalVaccines,
-              totalUtilisation
-            },
-            etabs,
-            categories,
-            lastUpdated: new Date().toISOString()
-          });
-
-        } catch (dbError) {
-          console.error("Database error in stats:", dbError);
-          return error("Erreur lors du calcul des statistiques", 500);
-        }
+        // --- Return Response ---
+        return json({
+          success: true,
+          summary: {
+            totalRecue,
+            totalAdmin,
+            totalRestante,
+            totalVaccines,
+            totalUtilisation
+          },
+          etabs,
+          categories,
+          lastUpdated: new Date().toISOString()
+        });
       }
 
-      // --------------------------
-      // HEALTH CHECK ENDPOINT
-      // --------------------------
-      if (path === "/api/health" && method === "GET") {
+      if (path === "/api/saveDaily" && method === "POST") {
         try {
-          // Test database connection
-          await db.prepare("SELECT 1").first();
-          return json({ 
-            status: "healthy", 
-            timestamp: new Date().toISOString(),
-            database: "connected"
-          });
-        } catch (error) {
-          return json({ 
-            status: "unhealthy", 
-            timestamp: new Date().toISOString(),
-            database: "disconnected"
-          }, 503);
+          const body = await request.json();
+          const {
+            user_id,
+            date,
+            age_65_no_chronic,
+            age_65_with_chronic,
+            chronic_adults,
+            chronic_children,
+            pregnant_women,
+            health_staff,
+            pilgrims,
+            others,
+            total_vaccinated,
+            vaccines_administered
+          } = body;
+
+          // ✅ Basic validation
+          if (!user_id || !date) {
+            return error("Missing required fields: user_id or date", 400);
+          }
+
+          // ✅ Insert into daily_reports table (matches your schema exactly)
+          await db.prepare(
+            `INSERT INTO daily_reports (
+                  user_id, date,
+                  age_65_no_chronic, age_65_with_chronic,
+                  chronic_adults, chronic_children,
+                  pregnant_women, health_staff,
+                  pilgrims, others,
+                  total_vaccinated, vaccines_administered
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+          )
+            .bind(
+              user_id, date,
+              age_65_no_chronic, age_65_with_chronic,
+              chronic_adults, chronic_children,
+              pregnant_women, health_staff,
+              pilgrims, others,
+              total_vaccinated, vaccines_administered
+            )
+            .run();
+
+          return json({ success: true, message: "Daily report saved successfully" });
+
+        } catch (err) {
+          return json({ error: err.message || err, msg: 'save error' }, 500);
+        }
+      }
+      if (path === "/api/getDailyReports" && method === "GET") {
+        try {
+          const url = new URL(request.url);
+          const userId = url.searchParams.get("user_id"); // get user_id from query
+
+          if (!userId) {
+            return json({ error: "Missing user_id parameter" }, 400);
+          }
+
+          // Fetch reports for this specific user
+          const reports = await db.prepare(
+            `SELECT * FROM daily_reports WHERE user_id = ? ORDER BY date DESC`
+          ).bind(userId).all();
+
+          return json({ success: true, data: reports.results || [] });
+
+        } catch (err) {
+          return json({ error: err.message || err, msg: 'fetch error' }, 500);
         }
       }
 
-      // Default 404
-      return error("Endpoint non trouvé", 404);
+      // ✅ Route: /api/setupCount
+      if (path === "/api/setupCount" && method === "POST") {
+        try {
+          const body = await request.json();
+          const { user_id, centres_count, equipes_count, vaccines_received } = body;
 
-    } catch (error) {
-      console.error("Unhandled error:", error);
-      return json({ 
-        error: "Erreur interne du serveur", 
-        success: false 
-      }, 500);
+          // ✅ التحقق من وجود بيانات مسبقة
+          const existing = await db.prepare(`SELECT COUNT(*) as count FROM setup`).first();
+
+          if (existing.count > 0) {
+            return json({
+              success: false,
+              message: "Setup already exists. You cannot add more.",
+            });
+          }
+
+          // ✅ إدخال البيانات لأول مرة
+          await db
+            .prepare(
+              `INSERT INTO setup (user_id, centres_count, equipes_count, vaccines_received)
+                  VALUES (?, ?, ?, ?)`
+            )
+            .bind(user_id, centres_count, equipes_count, vaccines_received)
+            .run();
+
+          return json({ success: true, message: "Setup saved successfully" });
+        } catch (err) {
+          return error("Failed to save setup: " + err.message, 500);
+        }
+      }
+
+      // ✅ Route: GET /api/setupCount → لعرض المعلومات
+      if (path === "/api/setupCount" && method === "GET") {
+        try {
+          const row = await db.prepare(`SELECT * FROM setup LIMIT 1`).first();
+          if (!row) {
+            return json({ success: true, exists: false, data: null });
+          }
+          return json({ success: true, exists: true, data: row });
+        } catch (err) {
+          return error("Failed to fetch setup: " + err.message, 500);
+        }
+      }
+
+      if (path === "/api/dailyReports/totals" && method === "GET") {
+        try {
+          const urlParams = new URL(request.url).searchParams;
+          const userId = urlParams.get("user_id"); // get user_id from query params
+
+          if (!userId) {
+            return new Response(JSON.stringify({ error: "user_id is required" }), {
+              headers: { "Content-Type": "application/json" },
+              status: 400
+            });
+          }
+
+          const query = `
+                SELECT 
+                  SUM(age_65_no_chronic) AS total_age_65_no_chronic,
+                  SUM(age_65_with_chronic) AS total_age_65_with_chronic,
+                  SUM(chronic_adults) AS total_chronic_adults,
+                  SUM(chronic_children) AS total_chronic_children,
+                  SUM(pregnant_women) AS total_pregnant_women,
+                  SUM(health_staff) AS total_health_staff,
+                  SUM(pilgrims) AS total_pilgrims,
+                  SUM(others) AS total_others,
+                  SUM(total_vaccinated) AS total_vaccinated,
+                  SUM(vaccines_administered) AS total_vaccines_administered,
+                  (
+                    SUM(age_65_no_chronic) +
+                    SUM(age_65_with_chronic) +
+                    SUM(chronic_adults) +
+                    SUM(chronic_children) +
+                    SUM(pregnant_women) +
+                    SUM(health_staff) +
+                    SUM(pilgrims) +
+                    SUM(others) 
+                  ) AS grand_total
+                FROM daily_reports
+                WHERE user_id = ?
+              `;
+
+          const { results } = await db.prepare(query).bind(userId).run();
+
+          return json({ success: true, data: results[0] });
+        } catch (err) {
+          return new Response(JSON.stringify({ error: err.message }), {
+            headers: { "Content-Type": "application/json" },
+            status: 500
+          });
+        }
+      }
+
+      // Example route: POST /users
+      // if (path === "/users" && method === "POST") {
+
+      // }
+
+
+
+      // Fallback for unknown routes
+      return json({ error: "Not Found response" }, 404);
+    } catch (err) {
+      return json({ error: err, msg: 'this is error' }, 500);
     }
   },
 };
-
-// Validation helper functions
-function isValidDate(dateString) {
-  const regex = /^\d{4}-\d{2}-\d{2}$/;
-  if (!regex.test(dateString)) return false;
-  
-  const date = new Date(dateString);
-  return date instanceof Date && !isNaN(date);
-}
-
-function isValidVaccinesData(vaccines) {
-  if (typeof vaccines !== "object" || vaccines === null) return false;
-  
-  // Check if all values are numbers
-  return Object.values(vaccines).every(value => 
-    typeof value === "number" && value >= 0
-  );
-}
