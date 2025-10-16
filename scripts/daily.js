@@ -51,7 +51,7 @@ function initPage() {
     "EPH Berriane": 200,
   };
   console.log(etab);
-  document.getElementById("reçue").value = predefined[etab] || 0;
+  document.getElementById("recue").value = predefined[etab] || 0;
 
   loadHistory();
 }
