@@ -1,5 +1,28 @@
 const apiBase = "https://paramedberriane-api.ferhathamza17.workers.dev";
 
+document.addEventListener("DOMContentLoaded", () => {
+  initPage();
+});
+
+function checkAccess(requiredRole) {
+  console.log("its verify");
+  const role = localStorage.getItem("role");
+  const etab = localStorage.getItem("etablissement");
+
+  if (!role || !etab) {
+    window.location.href = "index.html";
+    return;
+  }
+
+  if (requiredRole === "admin" && role !== "admin") {
+    window.location.href = "index.html";
+  }
+
+  if (requiredRole === "coordinateur" && role !== "coordinateur") {
+    window.location.href = "index.html";
+  }
+}
+
 function initPage() {
   checkAccess("coordinateur");
 
