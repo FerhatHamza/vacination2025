@@ -10,7 +10,7 @@ logoutBtn.addEventListener('click', () => {
   window.location.href = "index.html";
 });
 
-const saveSetup = document.getElementById("saveSetup");
+const saveSetup2 = document.getElementById("saveSetup");
 
 document.addEventListener("DOMContentLoaded", () => {
   initPage();
@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
 const USER_KEY = "userSession";
   const role = JSON.parse(localStorage.getItem(USER_KEY));
 
-saveSetup.addEventListener("click", async () => {
+saveSetup2.addEventListener("click", async () => {
   const countSetup = await getsetupCount();
   if(countSetup.total == 0) {
     const res = await saveSetup(role.id, document.getElementById("centres").value,  document.getElementById("centres").equipes,  document.getElementById("vaccines").value)
