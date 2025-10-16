@@ -211,7 +211,6 @@ input:focus {
 }
 
 
-
 .main-header {
   text-align: center;
   padding: 20px 10px;
@@ -227,12 +226,15 @@ input:focus {
   margin-bottom: 10px;
 }
 
+
 .header-bottom {
   display: flex;
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap; /* keeps it responsive */
   gap: 10px;
+  border-top: 2px solid #e0e0e0;
+  padding-top: 10px;
 }
 
 #etabName {
