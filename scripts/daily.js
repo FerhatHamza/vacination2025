@@ -203,7 +203,9 @@ async function saveDailyData() {
 
 async function loadHistory() {
   try {
-    const response = await fetchReports();
+    const user = JSON.parse(localStorage.getItem("userSession"));
+    console.log(user);
+    const response = await fetchReports(user.id);
     const result = response.data;
 
     console.log(result);

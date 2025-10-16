@@ -77,8 +77,8 @@ export async function getHistory(etab, limit = 30, offset = 0) {
 export async function getsetupCount() {
   return await request(`/api/setupCount`, "GET");
 }
-export async function fetchReports() {
-  return await request(`/api/getDailyReports`, "GET");
+export async function fetchReports(user_id) {
+  return await request(`/api/getDailyReports?user_id=${user_id}`, "GET");
 }
 
 /*
