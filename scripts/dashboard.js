@@ -1,5 +1,5 @@
 import { logoutUser } from "./auth.js";
-const API_BASE = "https://vacination2025-api.ferhathamza17.workers.dev";
+const apiBase = "https://vacination2025-api.ferhathamza17.workers.dev";
 checkAccess("admin");
 const logoutBtn = document.getElementById("logoutId");
 
