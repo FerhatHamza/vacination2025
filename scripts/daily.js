@@ -17,7 +17,9 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 saveSetup.addEventListener("click", async () => {
   const countSetup = await getsetupCount();
-  console.log(countSetup);
+  if(countSetup.total == 0) {
+    console.log("ok");
+  }
 });
 
 function checkAccess(requiredRole) {
