@@ -1,28 +1,44 @@
 const API_BASE = "https://vacination2025-api.ferhathamza17.workers.dev"; // ⬅️ Replace with your actual Worker URL
 
 // Helper for JSON requests
-async function request(endpoint, method = "GET", body = null, token = null) {
-  const headers = { "Content-Type": "application/json" };
-  if (token) headers["Authorization"] = `Bearer ${token}`;
+async function request(endpoint, method = "GET", body = null) {
+  const headers = { 
+    "Content-Type": "application/json" 
+  };
 
-  const options = { method, headers };
-  if (body) options.body = JSON.stringify(body);
-
-  const response = await fetch(`${API_BASE}${endpoint}`, options);
-  const data = await response.json();
-
-  if (!response.ok) {
-    throw new Error(data.error || "Request failed");
+  const options = { 
+    method, 
+    headers 
+  };
+  
+  if (body) {
+    options.body = JSON.stringify(body);
   }
-  return data;
+
+  try {
+    const response = await fetch(`${API_BASE}${endpoint}`, options);
+    
+    if (!response.ok) {
+      // إذا كان الرد غير ناجح، حاول تحليل JSON للخطأ
+      const errorText = await response.text();
+      let errorData;
+      try {
+        errorData = JSON.parse(errorText);
+      } catch {
+        errorData = { error: errorText || "Request failed" };
+      }
+      throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data;
+    
+  } catch (error) {
+    console.error('Request failed:', error);
+    throw error;
+  }
 }
 
-// ----------------------------
-// AUTHENTICATION
-// ----------------------------
-export async function login(username, password) {
-  return await request("/api/login", "POST", { username, password });
-}
 
 // ----------------------------
 // DAILY REPORT
