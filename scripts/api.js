@@ -47,6 +47,21 @@ export async function getHistory(etab, limit = 30, offset = 0) {
 }
 
 // ----------------------------
+// Setup count
+// ----------------------------
+export async function getsetupCount() {
+  return await request(`/api/setupCount`, "GET");
+}
+export async function saveSetup({userId, centres, equipes, vaccines}) {
+  return await request("/api/setup", "POST", {
+    userId,
+    centres,
+    equipes,
+    vaccines,
+  });
+}
+
+// ----------------------------
 // ADMIN STATS
 // ----------------------------
 export async function getAdminStats(token) {
