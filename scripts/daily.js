@@ -2,6 +2,13 @@ import { getsetupCount } from './api.js';
 const apiBase = "https://paramedberriane-api.ferhathamza17.workers.dev";
 checkAccess("coordinateur");
 
+const logoutBtn = document.getElementById("logoutId");
+
+logoutBtn.addEventListener('click', () => {
+  logoutUser();
+  window.location.href = "index.html";
+});
+
 const saveSetup = document.getElementById("saveSetup");
 
 document.addEventListener("DOMContentLoaded", () => {
