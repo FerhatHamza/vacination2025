@@ -1,4 +1,4 @@
-import { getsetupCount } from './api.js';
+import { getsetupCount, logoutUser } from './api.js';
 const apiBase = "https://vacination2025-api.ferhathamza17.workers.dev";
 checkAccess("coordinateur");
 
