@@ -50,6 +50,7 @@ function initPage() {
     "EPH Guerrara": 200,
     "EPH Berriane": 200,
   };
+  console.log(etab);
   document.getElementById("reçue").value = predefined[etab] || 0;
 
   loadHistory();
