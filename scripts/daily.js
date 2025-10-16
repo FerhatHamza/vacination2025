@@ -1,72 +1,47 @@
 import { getsetupCount, saveSetup } from './api.js';
 import { logoutUser } from './auth.js';
-
 const apiBase = "https://vacination2025-api.ferhathamza17.workers.dev";
-const USER_KEY = "userSession";
-
-// تحقق من الصلاحيات عند التحميل
 checkAccess("coordinateur");
 
 const logoutBtn = document.getElementById("logoutId");
-const saveSetup2 = document.getElementById("saveSetup");
-
-document.addEventListener("DOMContentLoaded", () => {
-  initPage();
-});
 
 logoutBtn.addEventListener('click', () => {
   logoutUser();
   window.location.href = "index.html";
 });
 
+const saveSetup2 = document.getElementById("saveSetup");
+
+document.addEventListener("DOMContentLoaded", () => {
+  initPage();
+});
+const USER_KEY = "userSession";
+  const role = JSON.parse(localStorage.getItem(USER_KEY));
+
 saveSetup2.addEventListener("click", async () => {
-  try {
-    const user = JSON.parse(localStorage.getItem(USER_KEY));
-    if (!user) {
-      alert("Utilisateur non connecté");
-      return;
-    }
-
-    const countSetup = await getsetupCount();
-    if (countSetup.total == 0) {
-      const centres = parseInt(document.getElementById("centres").value) || 0;
-      const equipes = parseInt(document.getElementById("equipes").value) || 0;
-      const vaccines = parseInt(document.getElementById("vaccines").value) || 0;
-
-      // تحقق من القيم المدخلة
-      if (centres < 0 || equipes < 0 || vaccines < 0) {
-        alert("Les valeurs ne peuvent pas être négatives");
-        return;
-      }
-
-      const res = await saveSetup(user.id, centres, equipes, vaccines);
-      if (res.success) { 
-        alert("Configuration enregistrée avec succès!");
-      } else {
-        alert("Erreur lors de l'enregistrement: " + (res.error || "Erreur inconnue"));
-      }
-    } else {
-      alert("Configuration déjà effectuée");
-    }
-  } catch (error) {
-    console.error("Error in saveSetup:", error);
-    alert("Erreur lors de l'enregistrement de la configuration");
+  const countSetup = await getsetupCount();
+  if(countSetup.total == 0) {
+    const res = await saveSetup(role.id, document.getElementById("centres").value,  document.getElementById("centres").equipes,  document.getElementById("vaccines").value)
+    if(res.success) { alert("ok") }
+  }else{
+    alert("not allowed");
   }
 });
 
 function checkAccess(requiredRole) {
-  const user = JSON.parse(localStorage.getItem(USER_KEY));
+  const USER_KEY = "userSession";
+  const role = JSON.parse(localStorage.getItem(USER_KEY));
 
-  if (!user) {
+  if (!role) {
     window.location.href = "index.html";
     return;
   }
 
-  if (requiredRole === "admin" && user.role !== "admin") {
+  if (requiredRole === "admin" && role.role !== "admin") {
     window.location.href = "index.html";
   }
 
-  if (requiredRole === "coordinateur" && user.role !== "coordinateur") {
+  if (requiredRole === "coordinateur" && role.role !== "coordinateur") {
     window.location.href = "index.html";
   }
 }
@@ -74,12 +49,9 @@ function checkAccess(requiredRole) {
 function initPage() {
   checkAccess("coordinateur");
 
+  
+  const USER_KEY = "userSession";
   const user = JSON.parse(localStorage.getItem(USER_KEY));
-  if (!user) {
-    window.location.href = "index.html";
-    return;
-  }
-
   const etab = user.etab;
   document.getElementById("etabName").textContent = etab;
   document.getElementById("today").textContent = new Date().toLocaleDateString("fr-DZ");
@@ -96,21 +68,10 @@ function initPage() {
     "EPH Guerrara": 200,
     "EPH Berriane": 200,
   };
-
+  console.log(etab);
   document.getElementById("recue").value = predefined[etab] || 0;
 
-  // إضافة event listeners لحساب المجموع تلقائياً
-  const inputIds = [
-    "p65sain", "p65malade", "maladults", "malenfants",
-    "enceintes", "sante", "pelerins", "autres", "recue"
-  ];
-
-  inputIds.forEach(id => {
-    const element = document.getElementById(id);
-    if (element) {
-      element.addEventListener('input', calcTotal);
-    }
-  });
+  // loadHistory();
 }
 
 function calcTotal() {
@@ -118,94 +79,74 @@ function calcTotal() {
     "p65sain", "p65malade", "maladults", "malenfants",
     "enceintes", "sante", "pelerins", "autres"
   ];
-  
-  let total = 0;
-  ids.forEach(id => {
-    total += parseInt(document.getElementById(id).value) || 0;
-  });
-  
+  let total = ids.reduce((sum, id) => sum + (parseInt(document.getElementById(id).value) || 0), 0);
   document.getElementById("totalVaccines").textContent = total;
 
-  const recue = parseInt(document.getElementById("recue").value) || 0;
-  const restante = recue - total;
-  
+  const reçue = parseInt(document.getElementById("reçue").value);
+  const restante = reçue - total;
   document.getElementById("administree").value = total;
   document.getElementById("restante").value = restante >= 0 ? restante : 0;
 }
 
 async function saveDailyData(e) {
   e.preventDefault();
-  
-  try {
-    const user = JSON.parse(localStorage.getItem(USER_KEY));
-    if (!user) {
-      alert("Utilisateur non connecté");
-      return;
-    }
+  const user = JSON.parse(localStorage.getItem("userSession"));
+  const etab = user.etab
+  const date = new Date().toISOString().split("T")[0];
 
-    const etab = user.etab;
-    const date = new Date().toISOString().split("T")[0];
+  const data = {
+    etablissement: etab,
+    date,
+    centres: parseInt(document.getElementById("centres").value || 0),
+    equipes: parseInt(document.getElementById("equipes").value || 0),
+    p65sain: parseInt(document.getElementById("p65sain").value || 0),
+    p65malade: parseInt(document.getElementById("p65malade").value || 0),
+    maladults: parseInt(document.getElementById("maladults").value || 0),
+    malenfants: parseInt(document.getElementById("malenfants").value || 0),
+    enceintes: parseInt(document.getElementById("enceintes").value || 0),
+    sante: parseInt(document.getElementById("sante").value || 0),
+    pelerins: parseInt(document.getElementById("pelerins").value || 0),
+    autres: parseInt(document.getElementById("autres").value || 0),
+    total: parseInt(document.getElementById("totalVaccines").textContent || 0),
+    reçue: parseInt(document.getElementById("reçue").value || 0),
+    administree: parseInt(document.getElementById("administree").value || 0),
+    restante: parseInt(document.getElementById("restante").value || 0),
+  };
 
-    // تجميع بيانات اللقاحات في كائن واحد
-    const vaccines = {
-      p65sain: parseInt(document.getElementById("p65sain").value) || 0,
-      p65malade: parseInt(document.getElementById("p65malade").value) || 0,
-      maladults: parseInt(document.getElementById("maladults").value) || 0,
-      malenfants: parseInt(document.getElementById("malenfants").value) || 0,
-      enceintes: parseInt(document.getElementById("enceintes").value) || 0,
-      sante: parseInt(document.getElementById("sante").value) || 0,
-      pelerins: parseInt(document.getElementById("pelerins").value) || 0,
-      autres: parseInt(document.getElementById("autres").value) || 0
-    };
+  const res = await fetch(`${apiBase}/api/saveDaily`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
 
-    const data = {
-      etab: etab,
-      date: date,
-      centres: parseInt(document.getElementById("centres").value) || 0,
-      equipes: parseInt(document.getElementById("equipes").value) || 0,
-      vaccines: vaccines,
-      quantiteAdministree: parseInt(document.getElementById("administree").value) || 0
-    };
-
-    // التحقق من البيانات قبل الإرسال
-    if (data.centres < 0 || data.equipes < 0 || data.quantiteAdministree < 0) {
-      alert("Les nombres ne peuvent pas être négatifs");
-      return;
-    }
-
-    const res = await fetch(`${apiBase}/api/saveDaily`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    });
-
-    const result = await res.json();
-
-    if (res.ok && result.success) {
-      alert("Données enregistrées avec succès !");
-      // يمكنك إعادة تعيين النموذج هنا إذا أردت
-      // resetForm();
-    } else {
-      alert("Erreur d'enregistrement: " + (result.error || "Erreur inconnue"));
-    }
-  } catch (error) {
-    console.error("Error saving daily data:", error);
-    alert("Erreur lors de l'enregistrement des données");
+  if (res.ok) {
+    alert("Données enregistrées avec succès !");
+    // loadHistory();
+  } else {
+    alert("Erreur d’enregistrement.");
   }
 }
 
-// دالة مساعدة لإعادة تعيين النموذج (اختياري)
-function resetForm() {
-  const inputs = document.querySelectorAll('input[type="number"]');
-  inputs.forEach(input => {
-    if (input.id !== 'recue') { // لا تعيد تعيين الكمية المستلمة
-      input.value = '';
-    }
-  });
-  document.getElementById("totalVaccines").textContent = "0";
-  document.getElementById("administree").value = "0";
-  document.getElementById("restante").value = document.getElementById("recue").value;
-}
+// async function loadHistory() {
+  
+//   const user = JSON.parse(localStorage.getItem("userSession"));
+//   const etab = user.etab;
+//   const res = await fetch(`${apiBase}/api/history?etab=${encodeURIComponent(etab)}`);
+//   const data = await res.json();
+
+//   const tbody = document.querySelector("#historyTable tbody");
+//   tbody.innerHTML = "";
+//   data.forEach(d => {
+//     const tr = document.createElement("tr");
+//     tr.innerHTML = `
+//       <td>${d.date}</td>
+//       <td>${d.total}</td>
+//       <td>${d.administree}</td>
+//       <td>${d.restante}</td>
+//     `;
+//     tbody.appendChild(tr);
+//   });
+// }
 
 function logout() {
   localStorage.clear();
