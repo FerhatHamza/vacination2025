@@ -92,10 +92,10 @@ async function saveDailyData(e) {
   });
 
   if (res.ok) {
-    alert("✅ Données enregistrées avec succès !");
+    alert("Données enregistrées avec succès !");
     loadHistory();
   } else {
-    alert("❌ Erreur d’enregistrement.");
+    alert("Erreur d’enregistrement.");
   }
 }
 
