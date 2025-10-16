@@ -31,7 +31,10 @@ function checkAccess(requiredRole) {
 function initPage() {
   checkAccess("coordinateur");
 
-  const etab = localStorage.getItem("etablissement");
+  
+  const USER_KEY = "userSession";
+  const user = JSON.parse(localStorage.getItem(USER_KEY));
+  const etab = user.etab;
   document.getElementById("etabName").textContent = etab;
   document.getElementById("today").textContent = new Date().toLocaleDateString("fr-DZ");
 
