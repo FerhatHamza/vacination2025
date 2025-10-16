@@ -2,22 +2,22 @@ const API_BASE = "https://vacination2025-api.ferhathamza17.workers.dev"; // ⬅�
 
 // Helper for JSON requests
 async function request(endpoint, method = "GET", body = null) {
-  const headers = { 
-    "Content-Type": "application/json" 
+  const headers = {
+    "Content-Type": "application/json"
   };
 
-  const options = { 
-    method, 
-    headers 
+  const options = {
+    method,
+    headers
   };
-  
+
   if (body) {
     options.body = JSON.stringify(body);
   }
 
   try {
     const response = await fetch(`${API_BASE}${endpoint}`, options);
-    
+
     if (!response.ok) {
       // إذا كان الرد غير ناجح، حاول تحليل JSON للخطأ
       const errorText = await response.text();
@@ -32,7 +32,7 @@ async function request(endpoint, method = "GET", body = null) {
 
     const data = await response.json();
     return data;
-    
+
   } catch (error) {
     console.error('Request failed:', error);
     throw error;
@@ -71,7 +71,7 @@ export async function getHistory(etab, limit = 30, offset = 0) {
 export async function getsetupCount() {
   return await request(`/api/setupCount`, "GET");
 }
-export async function saveSetup({userId, centres, equipes, vaccines}) {
+export async function saveSetup({ userId, centres, equipes, vaccines }) {
   return await request("/api/setup", "POST", {
     userId,
     centres,
@@ -83,8 +83,8 @@ export async function saveSetup({userId, centres, equipes, vaccines}) {
 // ----------------------------
 // ADMIN STATS
 // ----------------------------
-export async function getAdminStats(token) {
-  return await request("/api/admin/stats", "GET", null, token);
+export async function getAdminStats() {
+  return await request("/api/admin/stats", "GET", null);
 }
 
 // ----------------------------

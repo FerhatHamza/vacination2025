@@ -1,4 +1,5 @@
 import { logoutUser } from "./auth.js";
+import { getAdminStats } from "./api.js";
 const apiBase = "https://vacination2025-api.ferhathamza17.workers.dev";
 checkAccess("admin");
 const logoutBtn = document.getElementById("logoutId");
@@ -34,14 +35,17 @@ function checkAccess(requiredRole) {
 async function initDashboard() {
   checkAccess("admin");
 
-  const res = await fetch(`${apiBase}/api/admin/stats`);
-  const data = await res.json();
+  // const res = await fetch(`${apiBase}/api/admin/stats`);
+  // const data = await res.json();
+
+  const data = await getAdminStats();
+  console.log('data is: ', data);
 
   // --- Totals ---
-  document.getElementById("totalReçue").textContent = data.totalReçue;
-  document.getElementById("totalAdmin").textContent = data.totalAdmin;
-  document.getElementById("totalRestante").textContent = data.totalRestante;
-  document.getElementById("totalVaccines").textContent = data.totalVaccines;
+  document.getElementById("totalReçue").textContent = data.summary.totalRecue;
+  document.getElementById("totalAdmin").textContent = data.summary.totalAdmin;
+  document.getElementById("totalRestante").textContent = data.summary.totalRestante;
+  document.getElementById("totalVaccines").textContent = data.summary.totalVaccines;
 
   // --- Table ---
   const tbody = document.querySelector("#tableDetails tbody");
