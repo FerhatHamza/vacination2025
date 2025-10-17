@@ -45,7 +45,7 @@ async function getStatus() {
   }
 
   // Update summary cards
-  const total = Number(result.summary.total_vaccines_administered) || 0;
+  const total = Number(result.summary.total_vaccinated) || 0;
   const target = Number(result.summary.total_vaccines_received) || 10000;
   const restante = target - total;
   const percentage = (total / target) * 100;
@@ -128,16 +128,16 @@ async function renderEtabTable() {
           }
           return { r, g, b, css: `rgb(${r}, ${g}, ${b})` };
         }
-        
+
         // Compute brightness for text color contrast
         function getTextColor({ r, g, b }) {
           const brightness = (r * 299 + g * 587 + b * 114) / 1000;
           return brightness > 140 ? "#000" : "#fff"; // black for light bg, white for dark
         }
-        
+
         const colorData = getUtilisationColor(utilisation);
         const textColor = getTextColor(colorData);
-        
+
         // Build the row
         const row = document.createElement("tr");
         row.innerHTML = `
@@ -158,7 +158,7 @@ async function renderEtabTable() {
             ${(utilisation * 100).toFixed(1)} %
           </td>
         `;
-        
+
         tableBody.appendChild(row);
       });
     }
