@@ -173,19 +173,53 @@ async function saveDailyData() {
   const etab = user.Etab
   const date = new Date().toISOString().split("T")[0];
 
+  const age_65_no_chronic = document.getElementById("p65sain").value
+  const age_65_with_chronic = document.getElementById("p65malade").value
+  const chronic_adults = document.getElementById("maladults").value
+  const chronic_children = document.getElementById("malenfants").value
+  const pregnant_women = document.getElementById("enceintes").value
+  const health_staff = document.getElementById("sante").value
+  const pilgrims = document.getElementById("pelerins").value
+  const others = document.getElementById("autres").value
+  const total_vaccinated = document.getElementById("totalVaccinesAj").textContent
+  const vaccines_administered = document.getElementById("administree").value
+
+  const fields = [
+    age_65_no_chronic,
+    age_65_with_chronic,
+    chronic_adults,
+    chronic_children,
+    pregnant_women,
+    health_staff,
+    pilgrims,
+    others,
+    vaccines_administered
+  ];
+
+  const invalidField = fields.some(f => {
+    const trimmed = String(f).trim();
+    if (trimmed === '') return true;
+    const num = Number(trimmed);
+    return isNaN(num) || num < 0;
+  });
+
+  if (invalidField) {
+    alert('الرجاء إدخال قيم صحيحة (0 أو أكبر)');
+    return;
+  }
   const data = {
     user_id: user.id,
     date: date,
-    age_65_no_chronic: parseInt(document.getElementById("p65sain").value || 0),
-    age_65_with_chronic: parseInt(document.getElementById("p65malade").value || 0),
-    chronic_adults: parseInt(document.getElementById("maladults").value || 0),
-    chronic_children: parseInt(document.getElementById("malenfants").value || 0),
-    pregnant_women: parseInt(document.getElementById("enceintes").value || 0),
-    health_staff: parseInt(document.getElementById("sante").value || 0),
-    pilgrims: parseInt(document.getElementById("pelerins").value || 0),
-    others: parseInt(document.getElementById("autres").value || 0),
-    total_vaccinated: parseInt(document.getElementById("recue").value || 0),
-    vaccines_administered: parseInt(document.getElementById("administree").value || 0),
+    age_65_no_chronic: parseInt(age_65_no_chronic),
+    age_65_with_chronic: parseInt(age_65_with_chronic),
+    chronic_adults: parseInt(chronic_adults),
+    chronic_children: parseInt(chronic_children),
+    pregnant_women: parseInt(pregnant_women),
+    health_staff: parseInt(health_staff),
+    pilgrims: parseInt(pilgrims),
+    others: parseInt(others),
+    total_vaccinated: parseInt(total_vaccinated),
+    vaccines_administered: parseInt(vaccines_administered),
   };
   console.log('data "dd" :: ', data);
 
@@ -216,7 +250,7 @@ async function loadHistory() {
 
     const tableBody = document.querySelector('#reportsTable tbody');
     tableBody.innerHTML = ''; // clear previous data
-
+    console.log('result: ', result);
     result.forEach(report => {
       const row = document.createElement('tr');
 
@@ -231,7 +265,7 @@ async function loadHistory() {
             <td>${report.health_staff || 0}</td>
             <td>${report.pilgrims || 0}</td>
             <td>${report.others || 0}</td>
-            <td>${report.total_vaccinated - report.vaccines_administered || 0}</td>
+            <td>${report.total_vaccinated || 0}</td>
           `;
 
       tableBody.appendChild(row);

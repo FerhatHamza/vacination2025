@@ -102,9 +102,11 @@ export async function saveSetup(userId, centres, equipes, vaccines) {
 // ADMIN STATS
 // ----------------------------
 export async function getAdminStats() {
-  return await request("/api/admin/stats", "GET", null);
+  return await request("/api/status", "GET");
 }
-
+export async function getAdminStats2() {
+  return await request("/api/statusByUsername", "GET");
+}
 // ----------------------------
 // HEALTH CHECK
 // ----------------------------
