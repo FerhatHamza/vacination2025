@@ -76,9 +76,6 @@ async function getStatus() {
 
 
 
-import { getAdminStats2 } from "./api.js";
-
-import { getAdminStats2 } from "./api.js";
 
 async function renderEtabTable() {
   try {
