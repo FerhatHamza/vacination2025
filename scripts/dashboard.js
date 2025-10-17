@@ -113,10 +113,15 @@ async function renderEtabTable() {
         const utilisation = received > 0 ? vaccinated / received : 0;
 
         // color logic
-        let color = "red";
-        if (utilisation >= 2 / 3) color = "green";
-        else if (utilisation >= 2 / 5) color = "gold";
-
+        let bgColor = "#f8d7da"; // red by default
+        let textColor = "#000";
+        
+        if (utilisation >= 2 / 3) {
+          bgColor = "#d4edda"; // green background
+        } else if (utilisation >= 2 / 5) {
+          bgColor = "#fff3cd"; // yellow background
+        }
+        
         // Build the row
         const row = document.createElement("tr");
         row.innerHTML = `
@@ -125,7 +130,12 @@ async function renderEtabTable() {
           <td>—</td>
           <td>—</td>
           <td>—</td>
-          <td style="font-weight:bold; color:${color}">
+          <td style="
+            font-weight: bold; 
+            background-color: ${bgColor};
+            color: ${textColor};
+            text-align: center;
+          ">
             ${(utilisation * 100).toFixed(1)} %
           </td>
         `;
