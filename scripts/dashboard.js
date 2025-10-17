@@ -104,8 +104,8 @@ async function renderEtabTable() {
       return records.filter(r => new Date(r.date) >= cutoff);
     };
 
-    // 🔹 Fetch daily reports (if not already in your API, add /api/getDailyReportsAll)
-    const reportsResponse = await fetch("https://your-worker-url/api/getAllDailyReports");
+  
+    const reportsResponse = await fetch("https://vacination2025-api.ferhathamza17.workers.dev/api/getAllDailyReports");
     const reports = reportsResponse.ok ? (await reportsResponse.json()).data : [];
 
     response.data.forEach(row => {
