@@ -6,6 +6,85 @@
     <title>Tableau de Bord – Vaccination Antigrippale</title>
     <link rel="stylesheet" href="assets/dashboard.css" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      /* ⚙️ الشبكة العامة */
+      .stock-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1.2rem;
+        margin: 1.5rem 0;
+        padding: 0;
+      }
+
+      /* 🎴 البطاقة */
+      .stock-card {
+        background: linear-gradient(135deg, #ffffff 0%, #f8f9fc 100%);
+        border: 1px solid #e0e6ed;
+        border-radius: 16px;
+        padding: 1.1rem 1.2rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
+        transition: all 0.25s ease;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .stock-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
+      }
+
+      /* 🏢 اسم المؤسسة */
+      .stock-etab {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 0.4rem;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+      }
+
+      /* 💉 الكمية */
+      .stock-amount {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #1d4ed8;
+        text-align: right;
+      }
+
+      /* ✨ تأثير زخرفي */
+      .stock-card::before {
+        content: "";
+        position: absolute;
+        top: -40px;
+        right: -40px;
+        width: 80px;
+        height: 80px;
+        background: radial-gradient(
+          circle at center,
+          #3b82f6 0%,
+          transparent 70%
+        );
+        opacity: 0.15;
+      }
+
+      /* 🌙 الوضع الليلي */
+      @media (prefers-color-scheme: dark) {
+        .stock-card {
+          background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+          border-color: #374151;
+        }
+        .stock-etab {
+          color: #f9fafb;
+        }
+        .stock-amount {
+          color: #60a5fa;
+        }
+      }
+    </style>
   </head>
   <body>
     <div class="container">
@@ -34,6 +113,8 @@
           </div>
         </div>
       </section>
+
+      <div id="stock-initial-container"></div>
 
       <section class="vacc-summary">
         <h3>Résumé des Vaccinations par Établissement</h3>
@@ -92,6 +173,45 @@
       </section>
     </div>
 
+    <script>
+      function renderStockInitialCards() {
+        const stockData = [
+          { etab: "DSP Ghardaia", stock: 10000 },
+          { etab: "EHS Ghardaia", stock: 200 },
+          { etab: "EPSP Ghardaia", stock: 4000 },
+          { etab: "EPSP Metlili", stock: 2000 },
+          { etab: "EPSP Guerrara", stock: 2000 },
+          { etab: "EPSP Berriane", stock: 800 },
+          { etab: "EPH Ghardaia", stock: 400 },
+          { etab: "EPH Metlili", stock: 200 },
+          { etab: "EPH Guerrara", stock: 200 },
+          { etab: "EPH Berriane", stock: 200 },
+        ];
+
+        const container = document.getElementById("stock-initial-container");
+        if (!container) return;
+
+        let html = `<div class="stock-grid">`;
+
+        stockData.forEach((row) => {
+          html += `
+      <div class="stock-card">
+        <div class="stock-etab">
+          🏥 ${row.etab}
+        </div>
+        <div class="stock-amount">
+          ${row.stock.toLocaleString("fr-FR")}
+        </div>
+      </div>
+    `;
+        });
+
+        html += `</div>`;
+        container.innerHTML = html;
+      }
+
+      renderStockInitialCards();
+    </script>
     <script type="module" src="scripts/dashboard.js"></script>
   </body>
 </html>

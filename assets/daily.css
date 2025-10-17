@@ -417,3 +417,13 @@ input:focus {
     border: 1px solid #000;
   }
 }
+
+
+/*  error  */
+.error {
+  border: 2px solid #ff4d4d !important;
+  background-color: #fff0f0;
+}
+.errorBtn {
+  background-color: #ff4d4d;
+}

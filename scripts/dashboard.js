@@ -29,10 +29,10 @@ function checkAccess(requiredRole) {
 // 🧠 Main init
 async function initDashboard() {
   checkAccess("admin");
-  const [status, table, renderStock] = await Promise.all([
+  const [status, table] = await Promise.all([
     getStatus(),
     renderEtabTable(),
-    renderStockInitialTable(),
+
   ]);
   return { status, table };
 }
@@ -91,17 +91,17 @@ function getTextColor({ r, g, b }) {
 async function renderEtabTable() {
   try {
     // Fetch global and per-etab data
-    const [globalStats, perEtabStats] = await Promise.all([
-      getAdminStats(),
-      getAdminStats2()
-    ]);
+    // const [globalStats, perEtabStats] = await Promise.all([
+    //   getAdminStats(),
+    //   getAdminStats2()
+    // ]);
 
     const tableBody = document.querySelector("#vaccTable tbody");
     tableBody.innerHTML = "";
 
     // Hardcoded received doses
     const vaccinesReceived = {
-      "DPS Ghardaia": 200,
+      "DSP Ghardaia": 10000,
       "EHS Ghardaia": 200,
       "EPH Berriane": 200,
       "EPH Ghardaia": 400,
@@ -113,27 +113,27 @@ async function renderEtabTable() {
       "EPSP Metlili": 2000
     };
 
-    if (perEtabStats.success && Array.isArray(perEtabStats.data)) {
+    // if (perEtabStats.success && Array.isArray(perEtabStats.data)) {
 
-      const summaryRes = await summaryByPeriod();
-      const summaryData = summaryRes.data;
-      console.log('summaryData:: ', summaryData.users);
+    const summaryRes = await summaryByPeriod();
+    const summaryData = summaryRes.data;
+    console.log('summaryData:: ', summaryData.users);
 
 
-      if (!summaryData || !Array.isArray(summaryData.users)) {
-        console.warn("⚠️ Aucun utilisateur trouvé dans summaryData");
-        return;
-      }
+    if (!summaryData || !Array.isArray(summaryData.users)) {
+      console.warn("⚠️ Aucun utilisateur trouvé dans summaryData");
+      return;
+    }
 
-      summaryData.users.forEach(item => {
-        const row = document.createElement("tr");
-        const received = vaccinesReceived[item.username] || 0;
-        const utilisation = received > 0 ? item.grandTotal_total_vaccinated / received : 0;
+    summaryData.users.forEach(item => {
+      const row = document.createElement("tr");
+      const received = vaccinesReceived[item.username] || 0;
+      const utilisation = received > 0 ? item.grandTotal_total_vaccinated / received : 0;
 
-        const colorData = getUtilisationColor(utilisation)
-        const textColor = getTextColor(colorData);
+      const colorData = getUtilisationColor(utilisation)
+      const textColor = getTextColor(colorData);
 
-        row.innerHTML = `
+      row.innerHTML = `
           <td>${item.username}</td>
           <td>${item.summary.today}</td>
           <td>${item.summary.threeDaysLater}</td>
@@ -148,12 +148,12 @@ async function renderEtabTable() {
             border-radius: 6px;
             transition: 0.3s ease;
           ">
-            ${(utilisation * 100).toFixed(1)} %
+            ${(utilisation * 100).toFixed(2)} %
           </td>
         `;
-        tableBody.appendChild(row);
-      });
-    }
+      tableBody.appendChild(row);
+    });
+    // }
   } catch (error) {
     console.error("Erreur lors du rendu du tableau:", error);
   }
