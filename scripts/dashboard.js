@@ -142,10 +142,11 @@ async function renderEtabTable() {
         const row = document.createElement("tr");
         row.innerHTML = `
           <td>${etab}</td>
+          <td></td>
+          <td>—</td>
+          <td>—</td>
+          <td>—</td>
           <td>${vaccinated}</td>
-          <td>—</td>
-          <td>—</td>
-          <td>—</td>
           <td style="
             font-weight: bold;
             background-color: ${colorData.css};
