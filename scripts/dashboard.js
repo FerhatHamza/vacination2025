@@ -225,3 +225,13 @@ async function getStatus() {
   console.log(percentage);
   tauxVaccinations.textContent = `${percentage.toFixed(2)}%`; // عرض النسبة بشكل جميل
 }
+
+
+
+
+
+
+
+
+
+
