@@ -1,4 +1,4 @@
-const API_BASE = "https://vacination2025-api.ferhathamza17.workers.dev"; 
+const API_BASE = "https://vacination2025-api.ferhathamza17.workers.dev";
 
 // Helper for JSON requests
 async function request(endpoint, method = "GET", body = null) {
@@ -107,6 +107,15 @@ export async function getAdminStats() {
 export async function getAdminStats2() {
   return await request("/api/statusByUsername", "GET");
 }
+
+// export async function summaryByPeriod(userId) {
+//   return await request(`/api/dailyReports/summaryByPeriod?user_id=${userId}`, "GET");
+// }
+export async function summaryByPeriod() {
+  return await request(`/api/users/vaccination-summaries`, "GET");
+}
+
+
 // ----------------------------
 // HEALTH CHECK
 // ----------------------------
