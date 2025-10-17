@@ -109,18 +109,34 @@ async function renderEtabTable() {
         const etab = item.username;
         const vaccinated = item.grand_total || 0;
         const received = vaccinesReceived[etab] || 0;
-
         const utilisation = received > 0 ? vaccinated / received : 0;
 
-        // color logic
-        let bgColor = "#f8d7da"; // red by default
-        let textColor = "#000";
-        
-        if (utilisation >= 2 / 3) {
-          bgColor = "#d4edda"; // green background
-        } else if (utilisation >= 2 / 5) {
-          bgColor = "#fff3cd"; // yellow background
+        // Gradient color: red → yellow → green
+        function getUtilisationColor(value) {
+          const percent = Math.min(Math.max(value, 0), 1);
+          let r, g, b;
+          if (percent < 0.5) {
+            // Red → Yellow
+            r = 255;
+            g = Math.round(255 * (percent / 0.5));
+            b = 0;
+          } else {
+            // Yellow → Green
+            r = Math.round(255 * (1 - (percent - 0.5) / 0.5));
+            g = 255;
+            b = 0;
+          }
+          return { r, g, b, css: `rgb(${r}, ${g}, ${b})` };
         }
+        
+        // Compute brightness for text color contrast
+        function getTextColor({ r, g, b }) {
+          const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+          return brightness > 140 ? "#000" : "#fff"; // black for light bg, white for dark
+        }
+        
+        const colorData = getUtilisationColor(utilisation);
+        const textColor = getTextColor(colorData);
         
         // Build the row
         const row = document.createElement("tr");
@@ -131,14 +147,17 @@ async function renderEtabTable() {
           <td>—</td>
           <td>—</td>
           <td style="
-            font-weight: bold; 
-            background-color: ${bgColor};
+            font-weight: bold;
+            background-color: ${colorData.css};
             color: ${textColor};
             text-align: center;
+            border-radius: 6px;
+            transition: 0.3s ease;
           ">
             ${(utilisation * 100).toFixed(1)} %
           </td>
         `;
+        
         tableBody.appendChild(row);
       });
     }
