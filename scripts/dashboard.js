@@ -29,17 +29,12 @@ function checkAccess(requiredRole) {
 // 🧠 Main init
 async function initDashboard() {
   checkAccess("admin");
-<<<<<<< Updated upstream
-  await getStatus(); // loads charts + stats
-  await renderEtabTable(); // fills the table
-  await renderStockInitialTable();
-=======
-  const [status, table] = await Promise.all([
+  const [status, table, renderStock] = await Promise.all([
     getStatus(),
-    renderEtabTable()
+    renderEtabTable(),
+    renderStockInitialTable(),
   ]);
   return { status, table };
->>>>>>> Stashed changes
 }
 
 // 📊 Render charts + global numbers
@@ -165,7 +160,6 @@ async function renderEtabTable() {
 }
 
 
-<<<<<<< Updated upstream
 
 
 
@@ -178,8 +172,6 @@ async function renderEtabTable() {
 
 
 // 📈 Charts rendering
-=======
->>>>>>> Stashed changes
 function dessinerGraphiques(data) {
   if (!data || !data.etabs || !data.categories) {
     console.error("❌ Données invalides passées à dessinerGraphiques");

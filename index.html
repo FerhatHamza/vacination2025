@@ -1,47 +1,97 @@
 <!DOCTYPE html>
 <html lang="fr">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Évaluation Vaccination Antigrippale 2025/2026</title>
-  <link rel="stylesheet" href="assets/style.css" />
-</head>
-<body>
-  <div class="login-container">
-    <div class="login-card">
-      <div class="header">
-        <img src="assets/logo.png" alt="Logo DSP47" class="logo" />
-        <h3>Évaluation de la Vaccination Antigrippale 2025/2026</h3>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Évaluation Vaccination Antigrippale 2025/2026</title>
+    <link rel="stylesheet" href="assets/style.css" />
+    <style>
+      .password-field {
+        position: relative;
+        width: 280px;
+      }
+
+      .password-field input {
+        width: 100%;
+        padding: 10px 40px 10px 12px;
+        border: 2px solid #ddd;
+        border-radius: 10px;
+        font-size: 15px;
+        transition: 0.3s;
+        outline: none;
+      }
+
+      .password-field input:focus {
+        border-color: #4e73df;
+        box-shadow: 0 0 5px rgba(78, 115, 223, 0.4);
+      }
+
+      .password-toggle {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        color: #888;
+        transition: color 0.3s;
+      }
+
+      .password-toggle:hover {
+        color: #4e73df;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="login-container">
+      <div class="login-card">
+        <div class="header">
+          <img src="assets/logo.png" alt="Logo DSP47" class="logo" />
+          <h3>Évaluation de la Vaccination Antigrippale 2025/2026</h3>
+        </div>
+
+        <div class="form">
+          <label for="etablissement">Établissement</label>
+          <select id="etablissement">
+            <option value="">-- Sélectionner --</option>
+            <option>DSP Ghardaia</option>
+            <option>EHS Ghardaia</option>
+            <option>EPSP Ghardaia</option>
+            <option>EPSP Metlili</option>
+            <option>EPSP Guerrara</option>
+            <option>EPSP Berriane</option>
+            <option>EPH Ghardaia</option>
+            <option>EPH Metlili</option>
+            <option>EPH Guerrara</option>
+            <option>EPH Berriane</option>
+          </select>
+
+          <label for="password">Mot de passe</label>
+          <div class="password-field">
+            <input type="password" id="password" placeholder="••••••••" />
+            <i class="password-toggle" id="togglePassword">👁️</i>
+          </div>
+          <p class="error" id="errorId"></p>
+          <button id="loginBtn">Se connecter</button>
+        </div>
+
+        <footer>
+          <small
+            >© 2025 - Direction de la Santé et de la Population -
+            Ghardaïa</small
+          >
+        </footer>
       </div>
-
-      <div class="form">
-        <label for="etablissement">Établissement</label>
-        <select id="etablissement">
-          <option value="">-- Sélectionner --</option>
-          <option>DSP Ghardaia</option>
-          <option>EHS Ghardaia</option>
-          <option>EPSP Ghardaia</option>
-          <option>EPSP Metlili</option>
-          <option>EPSP Guerrara</option>
-          <option>EPSP Berriane</option>
-          <option>EPH Ghardaia</option>
-          <option>EPH Metlili</option>
-          <option>EPH Guerrara</option>
-          <option>EPH Berriane</option>
-        </select>
-
-        <label for="password">Mot de passe</label>
-        <input type="password" id="password" placeholder="••••••••" />
-        <p class="error" id="errorId"></p>
-        <button id="loginBtn">Se connecter</button>
-      </div>
-
-      <footer>
-        <small>© 2025 - Direction de la Santé et de la Population - Ghardaïa</small>
-      </footer>
     </div>
-  </div>
+    <script>
+      const passwordInput = document.getElementById("password");
+      const togglePassword = document.getElementById("togglePassword");
 
-  <script type="module" src="scripts/script.js"></script>
-</body>
+      togglePassword.addEventListener("click", () => {
+        const isPassword = passwordInput.type === "password";
+        passwordInput.type = isPassword ? "text" : "password";
+        togglePassword.textContent = isPassword ? "🙈" : "👁️";
+      });
+    </script>
+    <script type="module" src="scripts/script.js"></script>
+  </body>
 </html>
