@@ -32,6 +32,7 @@ async function initDashboard() {
   checkAccess("admin");
   await getStatus(); // loads charts + stats
   await renderEtabTable(); // fills the table
+  await renderStockInitialTable();
 }
 
 // 📊 Render charts + global numbers
@@ -168,6 +169,53 @@ async function renderEtabTable() {
 }
 
 document.addEventListener("DOMContentLoaded", renderEtabTable);
+
+
+
+
+// === AFTER your main table rendering ===
+
+function renderStockInitialTable() {
+  const stockData = [
+    { etab: "EHS Ghardaia", stock: 200 },
+    { etab: "EPSP Ghardaia", stock: 4000 },
+    { etab: "EPSP Metlili", stock: 2000 },
+    { etab: "EPSP Guerrara", stock: 2000 },
+    { etab: "EPSP Berriane", stock: 800 },
+    { etab: "EPH Ghardaia", stock: 400 },
+    { etab: "EPH Metlili", stock: 200 },
+    { etab: "EPH Guerrara", stock: 200 },
+    { etab: "EPH Berriane", stock: 200 }
+  ];
+
+  const container = document.getElementById("stock-initial-container");
+  if (!container) return;
+
+  let html = `
+    <table class="stock-initial-table">
+      <thead>
+        <tr>
+          <th>Établissement</th>
+          <th>Vaccins reçus</th>
+        </tr>
+      </thead>
+      <tbody>
+  `;
+
+  stockData.forEach((row) => {
+    html += `
+      <tr>
+        <td>${row.etab}</td>
+        <td>${row.stock.toLocaleString("fr-FR")}</td>
+      </tr>
+    `;
+  });
+
+  html += `</tbody></table>`;
+  container.innerHTML = html;
+}
+
+
 
 
 
