@@ -78,13 +78,15 @@ async function getStatus() {
 
 import { getAdminStats2 } from "./api.js";
 
+import { getAdminStats2 } from "./api.js";
+
 async function renderEtabTable() {
   try {
     const response = await getAdminStats2();
     const tableBody = document.querySelector("#vaccTable tbody");
     tableBody.innerHTML = "";
 
-    // 🔹 Static vaccine allocations per établissement
+    // 🔹 Static vaccine allocations
     const vaccineTargets = {
       "EHS Ghardaia": 200,
       "EPSP Ghardaia": 4000,
@@ -97,40 +99,58 @@ async function renderEtabTable() {
       "EPH Berriane": 200,
     };
 
+    // Helper: filter data by date range
+    const filterByDays = (records, days) => {
+      const now = new Date();
+      const cutoff = new Date(now);
+      cutoff.setDate(now.getDate() - (days - 1));
+      return records.filter(r => new Date(r.date) >= cutoff);
+    };
+
+    // 🔹 Fetch daily reports (if not already in your API, add /api/getDailyReportsAll)
+    const reportsResponse = await fetch("https://your-worker-url/api/getAllDailyReports");
+    const reports = reportsResponse.ok ? (await reportsResponse.json()).data : [];
+
     response.data.forEach(row => {
       const etab = row.username;
       const totalVaccinated = row.grand_total || 0;
       const vaccinesReceived = vaccineTargets[etab] || 0;
 
-      // Prevent division by zero
-      const utilisation = vaccinesReceived > 0
-        ? (totalVaccinated / vaccinesReceived) * 100
-        : 0;
+      // Filter by établissement name
+      const etabReports = reports.filter(r => r.username === etab);
 
-      // 🔸 Color logic
+      // Compute totals
+      const today = filterByDays(etabReports, 1).reduce((sum, r) => sum + (r.total_vaccinated || 0), 0);
+      const last3 = filterByDays(etabReports, 3).reduce((sum, r) => sum + (r.total_vaccinated || 0), 0);
+      const thisWeek = filterByDays(etabReports, 7).reduce((sum, r) => sum + (r.total_vaccinated || 0), 0);
+      const thisMonth = filterByDays(etabReports, 30).reduce((sum, r) => sum + (r.total_vaccinated || 0), 0);
+
+      // Utilisation %
+      const utilisation = vaccinesReceived > 0 ? (totalVaccinated / vaccinesReceived) * 100 : 0;
+
+      // Color logic
       let color = "🔴";
       if (utilisation >= (2 / 3) * 100) color = "🟢";
       else if (utilisation >= (2 / 5) * 100) color = "🟡";
 
-      // 🔸 Build table row
+      // Build table row
       const tr = document.createElement("tr");
       tr.innerHTML = `
         <td>${etab}</td>
-        <td class="center">
-          ${totalVaccinated.toLocaleString("fr-FR")}
-        </td>
+        <td class="center">${today}</td>
+        <td class="center">${last3}</td>
+        <td class="center">${thisWeek}</td>
+        <td class="center">${thisMonth}</td>
         <td class="center utilisation">${color} ${utilisation.toFixed(1)}%</td>
       `;
       tableBody.appendChild(tr);
     });
-
   } catch (error) {
     console.error("Erreur lors du rendu du tableau:", error);
   }
 }
 
 document.addEventListener("DOMContentLoaded", renderEtabTable);
-
 
 
 
