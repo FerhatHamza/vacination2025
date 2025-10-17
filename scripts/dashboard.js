@@ -40,7 +40,7 @@ function checkAccess(requiredRole) {
 async function initDashboard() {
   checkAccess("admin");
   getStatus();
-
+  renderEtabTable();
   // const data = await getAdminStats();
   // console.log('data is: ', data);
 
@@ -206,6 +206,54 @@ async function getStatus() {
   });
 
 
+async function renderEtabTable() {
+  const response = await getAdminStats2();
+  const etabs = response.data;
+  const tableContainer = document.createElement("section");
+  tableContainer.className = "table-section";
+  tableContainer.innerHTML = `
+    <h3>Statistiques par Établissement</h3>
+    <table class="etab-table">
+      <thead>
+        <tr>
+          <th>Établissement</th>
+          <th>Aujourd’hui</th>
+          <th>3 derniers jours</th>
+          <th>Cette semaine</th>
+          <th>Ce mois-ci</th>
+          <th>% Utilisation</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  `;
+  document.querySelector(".container").appendChild(tableContainer);
+
+  const tbody = tableContainer.querySelector("tbody");
+  etabs.forEach(e => {
+    const ratio = e.vaccines_received ? e.grand_total / e.vaccines_received : 0;
+    let colorClass = ratio >= 2/3 ? "green" : ratio >= 2/5 ? "yellow" : "red";
+    const row = document.createElement("tr");
+    row.className = colorClass;
+    row.innerHTML = `
+      <td>${e.username}</td>
+      <td>${e.today_total ?? 0}</td>
+      <td>${e.last3days_total ?? 0}</td>
+      <td>${e.week_total ?? 0}</td>
+      <td>${e.month_total ?? 0}</td>
+      <td>${(ratio * 100).toFixed(1)}%</td>
+    `;
+    tbody.appendChild(row);
+  });
+}
+
+
+
+
+
+
+
+  
 
 
 
