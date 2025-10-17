@@ -350,6 +350,88 @@ export default {
         }
       }
 
+
+      if (path === "/api/status" && method === "GET") {
+        try {
+          const urlParams = new URL(request.url).searchParams;
+
+
+          // ✅ جلب المجاميع الخاصة بالمستخدم
+          const query = `
+                SELECT
+                  COALESCE(SUM(age_65_no_chronic), 0) AS total_age_65_no_chronic,
+                  COALESCE(SUM(age_65_with_chronic), 0) AS total_age_65_with_chronic,
+                  COALESCE(SUM(chronic_adults), 0) AS total_chronic_adults,
+                  COALESCE(SUM(chronic_children), 0) AS total_chronic_children,
+                  COALESCE(SUM(pregnant_women), 0) AS total_pregnant_women,
+                  COALESCE(SUM(health_staff), 0) AS total_health_staff,
+                  COALESCE(SUM(pilgrims), 0) AS total_pilgrims,
+                  COALESCE(SUM(others), 0) AS total_others,
+                  COALESCE(SUM(total_vaccinated), 0) AS total_vaccinated,
+                  COALESCE(SUM(vaccines_administered), 0) AS total_vaccines_administered,
+                  (
+                    COALESCE(SUM(age_65_no_chronic), 0) +
+                    COALESCE(SUM(age_65_with_chronic), 0) +
+                    COALESCE(SUM(chronic_adults), 0) +
+                    COALESCE(SUM(chronic_children), 0) +
+                    COALESCE(SUM(pregnant_women), 0) +
+                    COALESCE(SUM(health_staff), 0) +
+                    COALESCE(SUM(pilgrims), 0) +
+                    COALESCE(SUM(others), 0)
+                  ) AS grand_total
+                FROM daily_reports
+              `;
+
+          const { results } = await db.prepare(query).all();
+
+          return json({
+            success: true,
+            summary: results[0] || {},
+            message: "User status fetched successfully"
+          });
+        } catch (err) {
+          return new Response(
+            JSON.stringify({ success: false, error: "Failed to fetch status: " + err.message }),
+            { headers: { "Content-Type": "application/json" }, status: 500 }
+          );
+        }
+      }
+
+      if (path === "/api/statusByUsername" && method === "GET") {
+        try {
+          const query = `
+                SELECT 
+                  u.username,
+                  (
+                    COALESCE(SUM(d.age_65_no_chronic), 0) +
+                    COALESCE(SUM(d.age_65_with_chronic), 0) +
+                    COALESCE(SUM(d.chronic_adults), 0) +
+                    COALESCE(SUM(d.chronic_children), 0) +
+                    COALESCE(SUM(d.pregnant_women), 0) +
+                    COALESCE(SUM(d.health_staff), 0) +
+                    COALESCE(SUM(d.pilgrims), 0) +
+                    COALESCE(SUM(d.others), 0)
+                  ) AS grand_total
+                FROM users u
+                LEFT JOIN daily_reports d ON u.id = d.user_id
+                GROUP BY u.username
+                ORDER BY u.username ASC
+              `;
+
+          const { results } = await db.prepare(query).all();
+
+          return json({
+            success: true,
+            data: results,
+            message: "Grand totals grouped by username fetched successfully"
+          });
+        } catch (err) {
+          return new Response(
+            JSON.stringify({ success: false, error: "Failed to fetch status: " + err.message }),
+            { headers: { "Content-Type": "application/json" }, status: 500 }
+          );
+        }
+      }
       // Example route: POST /users
       // if (path === "/users" && method === "POST") {
 
