@@ -444,6 +444,46 @@ body {
 
 
 
+
+
+
+
+
+.etab-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.etab-table th, .etab-table td {
+  padding: 12px 16px;
+  text-align: center;
+}
+
+.etab-table th {
+  background: #004085;
+  color: white;
+  font-weight: 600;
+}
+
+.etab-table tr:nth-child(even) {
+  background-color: #f8f9fa;
+}
+
+.etab-table tr.green { background-color: #d4edda; }   /* 🟢 */
+.etab-table tr.yellow { background-color: #fff3cd; }  /* 🟡 */
+.etab-table tr.red { background-color: #f8d7da; }     /* 🔴 */
+
+.etab-table tr:hover {
+  transform: scale(1.01);
+  transition: 0.2s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
   .vacc-summary {
     background: #f8fbff;
     border-radius: 20px;
