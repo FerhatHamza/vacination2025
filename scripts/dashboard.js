@@ -136,7 +136,7 @@ async function renderEtabTable() {
       row.innerHTML = `
           <td>${item.username}</td>
           <td>${item.summary.today}</td>
-          <td>${item.summary.threeDaysLater}</td>
+          <td>${item.summary.lastThreeDays}</td>
           <td>${item.summary.thisWeek}</td>
           <td>${item.summary.thisMonth}</td>
           <td>${item.grandTotal_total_vaccinated}</td>
