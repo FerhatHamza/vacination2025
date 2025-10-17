@@ -73,39 +73,69 @@ async function getStatus() {
   });
 }
 
-// 🧾 Render establishment summary table
+
+
+
+import { getAdminStats2 } from "./api.js";
+
 async function renderEtabTable() {
-  const response = await getAdminStats2();
-  const etabs = response.data;
+  try {
+    const response = await getAdminStats2();
+    const tableBody = document.querySelector("#vaccTable tbody");
+    tableBody.innerHTML = "";
 
-  const tbody = document.querySelector("#vaccTable tbody");
-  tbody.innerHTML = "";
+    // 🔹 Static vaccine allocations per établissement
+    const vaccineTargets = {
+      "EHS Ghardaia": 200,
+      "EPSP Ghardaia": 4000,
+      "EPSP Metlili": 2000,
+      "EPSP Guerrara": 2000,
+      "EPSP Berriane": 800,
+      "EPH Ghardaia": 400,
+      "EPH Metlili": 200,
+      "EPH Guerrara": 200,
+      "EPH Berriane": 200,
+    };
 
-  etabs.forEach(e => {
-    const ratio = e.vaccines_received
-      ? e.grand_total / e.vaccines_received
-      : 0;
-    let bgColor =
-      ratio >= 2 / 3
-        ? "#c8e6c9" // green
-        : ratio >= 2 / 5
-        ? "#fff9c4" // yellow
-        : "#ffcdd2"; // red
+    response.data.forEach(row => {
+      const etab = row.username;
+      const totalVaccinated = row.grand_total || 0;
+      const vaccinesReceived = vaccineTargets[etab] || 0;
 
-    const tr = document.createElement("tr");
-    tr.style.backgroundColor = bgColor;
+      // Prevent division by zero
+      const utilisation = vaccinesReceived > 0
+        ? (totalVaccinated / vaccinesReceived) * 100
+        : 0;
 
-    tr.innerHTML = `
-      <td>${e.username}</td>
-      <td>${e.today_total ?? 0}</td>
-      <td>${e.last3days_total ?? 0}</td>
-      <td>${e.week_total ?? 0}</td>
-      <td>${e.month_total ?? 0}</td>
-      <td>${(ratio * 100).toFixed(1)}%</td>
-    `;
-    tbody.appendChild(tr);
-  });
+      // 🔸 Color logic
+      let color = "🔴";
+      if (utilisation >= (2 / 3) * 100) color = "🟢";
+      else if (utilisation >= (2 / 5) * 100) color = "🟡";
+
+      // 🔸 Build table row
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${etab}</td>
+        <td class="center">
+          ${totalVaccinated.toLocaleString("fr-FR")}
+        </td>
+        <td class="center utilisation">${color} ${utilisation.toFixed(1)}%</td>
+      `;
+      tableBody.appendChild(tr);
+    });
+
+  } catch (error) {
+    console.error("Erreur lors du rendu du tableau:", error);
+  }
 }
+
+document.addEventListener("DOMContentLoaded", renderEtabTable);
+
+
+
+
+
+
 
 // 📈 Charts rendering
 function dessinerGraphiques(data) {
