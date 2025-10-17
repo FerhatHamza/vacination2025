@@ -77,71 +77,61 @@ async function getStatus() {
 
 
 
+
+
 async function renderEtabTable() {
   try {
-    const response = await getAdminStats2();
+    // Fetch global and per-etab data
+    const [globalStats, perEtabStats] = await Promise.all([
+      getAdminStats(),
+      getAdminStats2()
+    ]);
+
     const tableBody = document.querySelector("#vaccTable tbody");
     tableBody.innerHTML = "";
 
-    // 🔹 Static vaccine allocations
-    const vaccineTargets = {
+    // Hardcoded received doses
+    const vaccinesReceived = {
+      "DPS Ghardaia": 200,
       "EHS Ghardaia": 200,
-      "EPSP Ghardaia": 4000,
-      "EPSP Metlili": 2000,
-      "EPSP Guerrara": 2000,
-      "EPSP Berriane": 800,
-      "EPH Ghardaia": 400,
-      "EPH Metlili": 200,
-      "EPH Guerrara": 200,
       "EPH Berriane": 200,
+      "EPH Ghardaia": 400,
+      "EPH Guerrara": 200,
+      "EPH Metlili": 200,
+      "EPSP Berriane": 800,
+      "EPSP Ghardaia": 4000,
+      "EPSP Guerrara": 2000,
+      "EPSP Metlili": 2000
     };
 
-    // Helper: filter data by date range
-    const filterByDays = (records, days) => {
-      const now = new Date();
-      const cutoff = new Date(now);
-      cutoff.setDate(now.getDate() - (days - 1));
-      return records.filter(r => new Date(r.date) >= cutoff);
-    };
+    if (perEtabStats.success && Array.isArray(perEtabStats.data)) {
+      perEtabStats.data.forEach(item => {
+        const etab = item.username;
+        const vaccinated = item.grand_total || 0;
+        const received = vaccinesReceived[etab] || 0;
 
-  
-    const reportsResponse = await fetch("https://vacination2025-api.ferhathamza17.workers.dev/api/getAllDailyReports");
-    const reports = reportsResponse.ok ? (await reportsResponse.json()).data : [];
+        const utilisation = received > 0 ? vaccinated / received : 0;
 
-    response.data.forEach(row => {
-      const etab = row.username;
-      const totalVaccinated = row.grand_total || 0;
-      const vaccinesReceived = vaccineTargets[etab] || 0;
+        // color logic
+        let color = "red";
+        if (utilisation >= 2 / 3) color = "green";
+        else if (utilisation >= 2 / 5) color = "gold";
 
-      // Filter by établissement name
-      const etabReports = reports.filter(r => r.username === etab);
-
-      // Compute totals
-      const today = filterByDays(etabReports, 1).reduce((sum, r) => sum + (r.total_vaccinated || 0), 0);
-      const last3 = filterByDays(etabReports, 3).reduce((sum, r) => sum + (r.total_vaccinated || 0), 0);
-      const thisWeek = filterByDays(etabReports, 7).reduce((sum, r) => sum + (r.total_vaccinated || 0), 0);
-      const thisMonth = filterByDays(etabReports, 30).reduce((sum, r) => sum + (r.total_vaccinated || 0), 0);
-
-      // Utilisation %
-      const utilisation = vaccinesReceived > 0 ? (totalVaccinated / vaccinesReceived) * 100 : 0;
-
-      // Color logic
-      let color = "🔴";
-      if (utilisation >= (2 / 3) * 100) color = "🟢";
-      else if (utilisation >= (2 / 5) * 100) color = "🟡";
-
-      // Build table row
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${etab}</td>
-        <td class="center">${today}</td>
-        <td class="center">${last3}</td>
-        <td class="center">${thisWeek}</td>
-        <td class="center">${thisMonth}</td>
-        <td class="center utilisation">${color} ${utilisation.toFixed(1)}%</td>
-      `;
-      tableBody.appendChild(tr);
-    });
+        // Build the row
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${etab}</td>
+          <td>${vaccinated}</td>
+          <td>—</td>
+          <td>—</td>
+          <td>—</td>
+          <td style="font-weight:bold; color:${color}">
+            ${(utilisation * 100).toFixed(1)} %
+          </td>
+        `;
+        tableBody.appendChild(row);
+      });
+    }
   } catch (error) {
     console.error("Erreur lors du rendu du tableau:", error);
   }
