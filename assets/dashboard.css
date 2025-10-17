@@ -599,3 +599,25 @@ body {
   }
 
 /* Rest of the CSS remains the same for dark mode, print styles, etc. */
+
+
+.vacc-modern-table tr {
+  transition: background-color 0.3s ease;
+}
+.vacc-modern-table tr:hover {
+  background-color: #f1f1f1;
+}
+.vacc-modern-table th {
+  background: #0077b6;
+  color: white;
+}
+.vacc-modern-table td,
+.vacc-modern-table th {
+  padding: 10px;
+  text-align: center;
+}
+
+
+
+
+
