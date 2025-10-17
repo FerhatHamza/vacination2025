@@ -142,7 +142,7 @@ async function renderEtabTable() {
         const row = document.createElement("tr");
         row.innerHTML = `
           <td>${etab}</td>
-          <td></td>
+          <td>—</td>
           <td>—</td>
           <td>—</td>
           <td>—</td>
