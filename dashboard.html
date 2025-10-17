@@ -37,23 +37,31 @@
 
       
       
-     <section class="vacc-summary">
-        <h3>Résumé des Vaccinations par Établissement</h3>
-      
-        <div class="table-wrapper">
-          <table class="vacc-modern-table" id="vaccTable">
-            <thead>
-              <tr>
-                <th>Établissement</th>
-                <th>Total des personnes vaccinées</th>
-              </tr>
-            </thead>
-            <tbody>
-              <!-- Les données viendront du script -->
-            </tbody>
-          </table>
-        </div>
-      </section>
+<section class="vacc-summary">
+  <h3>Résumé des Vaccinations par Établissement</h3>
+
+  <div class="table-wrapper">
+    <table class="vacc-modern-table" id="vaccTable">
+      <thead>
+        <tr>
+          <th rowspan="2">Établissement</th>
+          <th colspan="4">Total des personnes vaccinées</th>
+          <th rowspan="2">% Utilisation</th>
+        </tr>
+        <tr>
+          <th>Aujourd’hui</th>
+          <th>3 derniers jours</th>
+          <th>Cette semaine</th>
+          <th>Ce mois-ci</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Données dynamiques depuis dashboard.js -->
+      </tbody>
+    </table>
+  </div>
+</section>
+
 
 
 
