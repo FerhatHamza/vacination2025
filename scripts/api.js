@@ -1,4 +1,4 @@
-const API_BASE = "https://vacination2025-api.ferhathamza17.workers.dev"; // ⬅️ Replace with your actual Worker URL
+const API_BASE = "https://vacination2025-api.ferhathamza17.workers.dev"; 
 
 // Helper for JSON requests
 async function request(endpoint, method = "GET", body = null) {
