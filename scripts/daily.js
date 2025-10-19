@@ -97,7 +97,8 @@ async function initPage() {
   checkAccess("coordinateur");
   calcTotal();
   loadHistory();
-  const res = await getsetupCount();
+  const res = await getsetupCount(role.id);
+  console.log(res);
   if (!res.exists) {
 
     centresElement.disabled = false;
