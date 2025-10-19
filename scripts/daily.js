@@ -98,7 +98,7 @@ async function initPage() {
   calcTotal();
   loadHistory();
   const res = await getsetupCount(role.id);
-  console.log(res);
+
   if (!res.exists) {
 
     centresElement.disabled = false;
@@ -196,10 +196,10 @@ async function saveDailyData() {
   const etab = user.Etab
   const date = new Date().toISOString().split("T")[0];
 
-  console.log('date is ', date);
+
 
   const existingReports = await fetchReports(user.id);
-  console.log('existingReports is ', existingReports);
+  // console.log('existingReports is ', existingReports);
   if (existingReports.success) {
     const todayExists = existingReports.data.some(
       report => report.date === date
