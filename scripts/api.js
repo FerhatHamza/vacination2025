@@ -122,3 +122,10 @@ export async function summaryByPeriod() {
 export async function checkHealth() {
   return await request("/api/health", "GET");
 }
+
+
+// raports
+
+export async function getRapports() {
+  return await request("/api/reports/summary", "GET");
+}

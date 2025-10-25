@@ -1,15 +1,21 @@
 import { logoutUser } from "./auth.js";
-import { getAdminStats, getAdminStats2, summaryByPeriod } from "./api.js";
+import { getAdminStats, getAdminStats2, summaryByPeriod, getRapports } from "./api.js";
 
 const tauxVaccinations = document.getElementById("tauxVaccinations");
 const totalVaccines = document.getElementById("totalVaccines");
 const totalRestante = document.getElementById("totalRestante");
 const logoutBtn = document.getElementById("logoutId");
+const rapportsBtn = document.getElementById("raports");
 
 
 logoutBtn.addEventListener("click", () => {
   logoutUser();
   window.location.href = "index.html";
+});
+rapportsBtn.addEventListener("click", async () => {
+  const dd = await getRapports()
+  printReport(dd)
+  console.log('rapports:: ', dd)
 });
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -409,3 +415,279 @@ style.textContent = `
   }
 `;
 document.head.appendChild(style);
+
+
+// raports
+
+function printReport(data) {
+  if (!data || !data.data) {
+    alert("لا توجد بيانات للطباعة!");
+    return;
+  }
+
+  const today = new Date().toLocaleDateString("fr-DZ");
+
+  let html = `
+  <html lang="fr">
+  <head>
+    <meta charset="UTF-8">
+    <title>Rapport de Vaccination — DSP Ghardaïa</title>
+    <style>
+      @page {
+        size: A4;
+        margin: 15mm 20mm;
+      }
+
+      body {
+        font-family: 'Times New Roman', 'Arial', sans-serif;
+        background: white;
+        color: #000;
+        margin: 0;
+      }
+
+      header {
+        text-align: center;
+        border-bottom: 2px solid #000;
+        padding-bottom: 10px;
+        margin-bottom: 25px;
+      }
+
+      .republique {
+        font-weight: bold;
+        font-size: 15px;
+        margin-bottom: 5px;
+      }
+
+      .ministere {
+        font-size: 14px;
+        margin-bottom: 3px;
+      }
+
+      .direction {
+        font-size: 13px;
+        margin-bottom: 10px;
+      }
+
+      .logo {
+        width: 80px;
+        margin-bottom: 10px;
+      }
+
+      .report-title {
+        text-align: center;
+        font-size: 18px;
+        font-weight: bold;
+        color: #0a47a9;
+        margin-top: 15px;
+        text-transform: uppercase;
+        border: 1px solid #0a47a9;
+        display: inline-block;
+        padding: 5px 15px;
+        border-radius: 4px;
+      }
+
+      .header-info {
+        display: flex;
+        justify-content: space-between;
+        font-size: 13px;
+        margin-top: 10px;
+        margin-bottom: 10px;
+      }
+
+      .region-title {
+        background: #f2f6ff;
+        color: #0a47a9;
+        font-weight: bold;
+        padding: 8px 10px;
+        border-left: 4px solid #0a66c2;
+        margin-top: 25px;
+        font-size: 15px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 6px;
+        background: white;
+      }
+
+      th, td {
+        border: 1px solid #444;
+        padding: 6px;
+        text-align: center;
+        font-size: 12px;
+      }
+
+      th {
+        background-color: #0a66c2;
+        color: white;
+      }
+
+      tr:nth-child(even) {
+        background-color: #f8f9fa;
+      }
+
+      .grand-total-title {
+        margin-top: 30px;
+        text-align: center;
+        color: #0a47a9;
+        font-weight: bold;
+        font-size: 16px;
+        border-top: 2px solid #0a47a9;
+        padding-top: 10px;
+      }
+
+      .grand-total-table td {
+        font-weight: bold;
+        background: #ecf9f1;
+      }
+
+      footer {
+        text-align: center;
+        font-size: 12px;
+        color: #555;
+        border-top: 1px solid #ccc;
+        padding-top: 5px;
+        margin-top: 30px;
+      }
+
+      .signature {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 60px;
+        font-size: 13px;
+        color: #000;
+      }
+
+      .signature div {
+        width: 45%;
+        text-align: center;
+      }
+
+      .signature .label {
+        font-weight: bold;
+        text-decoration: underline;
+      }
+
+      .signature p {
+        margin-top: 50px;
+        border-top: 1px solid #000;
+        width: 70%;
+        margin-left: auto;
+        margin-right: auto;
+        padding-top: 3px;
+        font-size: 12px;
+      }
+
+      .bilingual {
+        font-size: 11px;
+        color: #777;
+        margin-top: 3px;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      
+      <div class="republique">الجمهورية الجزائرية الديمقراطية الشعبية</div>
+      <div class="ministere">République Algérienne Démocratique et Populaire</div>
+      <div class="direction">Ministère de la Santé — Direction de la Santé et de la Population de la Wilaya de Ghardaïa</div>
+      <div class="header-info">
+        <div>Ghardaïa, le : <strong>${today}</strong></div>
+        <div>N° : ......... / DSP.47 / 2025</div>
+      </div>
+      <div class="report-title">Rapport Officiel de Vaccination</div>
+    </header>
+  `;
+
+  const regions = ["Ghardaia", "Metlili", "Guerrara", "Berriane"];
+
+  regions.forEach(region => {
+    const centres = data.data[region];
+    if (!centres || centres.length === 0) return;
+
+    html += `<div class="region-title">Secteur de ${region}</div>`;
+    html += `
+      <table>
+        <thead>
+          <tr>
+            <th>Établissement / المؤسسة</th>
+            <th>+65 Sans Maladies Chroniques<br>(بدون أمراض مزمنة)</th>
+            <th>+65 Avec Maladies Chroniques<br>(مع أمراض مزمنة)</th>
+            <th>Adultes Chroniques<br>(بالغين مزمنين)</th>
+            <th>Enfants Chroniques<br>(أطفال مزمنين)</th>
+            <th>Femmes Enceintes<br>(نساء حوامل)</th>
+            <th>Personnel Santé<br>(عمال الصحة)</th>
+            <th>Pèlerins<br>(الحجاج)</th>
+            <th>Autres<br>(أخرى)</th>
+            <th>Total Vaccinés<br>(المجموع)</th>
+          </tr>
+        </thead>
+        <tbody>
+    `;
+
+    centres.forEach(row => {
+      html += `
+        <tr>
+          <td>${row.username}</td>
+          <td>${row.age_65_no_chronic}</td>
+          <td>${row.age_65_with_chronic}</td>
+          <td>${row.chronic_adults}</td>
+          <td>${row.chronic_children}</td>
+          <td>${row.pregnant_women}</td>
+          <td>${row.health_staff}</td>
+          <td>${row.pilgrims}</td>
+          <td>${row.others}</td>
+          <td><strong>${row.total_vaccinated}</strong></td>
+        </tr>
+      `;
+    });
+
+    html += `</tbody></table>`;
+  });
+
+  const t = data.total;
+  if (t) {
+    html += `
+      <div class="grand-total-title">TOTAL — ${t.region}</div>
+      <table class="grand-total-table">
+        <tbody>
+          <tr><td>+65 Sans Maladies Chroniques</td><td>${t.age_65_no_chronic}</td></tr>
+          <tr><td>+65 Avec Maladies Chroniques</td><td>${t.age_65_with_chronic}</td></tr>
+          <tr><td>Adultes Chroniques</td><td>${t.chronic_adults}</td></tr>
+          <tr><td>Enfants Chroniques</td><td>${t.chronic_children}</td></tr>
+          <tr><td>Femmes Enceintes</td><td>${t.pregnant_women}</td></tr>
+          <tr><td>Personnel Santé</td><td>${t.health_staff}</td></tr>
+          <tr><td>Pèlerins</td><td>${t.pilgrims}</td></tr>
+          <tr><td>Autres</td><td>${t.others}</td></tr>
+          <tr><td><strong>Total Vaccinés</strong></td><td><strong>${t.total_vaccinated}</strong></td></tr>
+        </tbody>
+      </table>
+    `;
+  }
+
+  html += `
+    <div class="signature">
+      <div>
+        <div class="label">Chef de Service de Prévention</div>
+        <p>Signature et Cachet</p>
+      </div>
+      <div>
+        <div class="label">Directeur de la Santé et de la Population</div>
+        <p>Signature et Cachet</p>
+      </div>
+    </div>
+
+    <footer>
+      © ${new Date().getFullYear()} — Ministère de la Santé, DSP Ghardaïa
+
+    </footer>
+  </body>
+  </html>`;
+
+  const printWindow = window.open('', '_blank');
+  printWindow.document.write(html);
+  printWindow.document.close();
+  printWindow.focus();
+  printWindow.print();
+}
