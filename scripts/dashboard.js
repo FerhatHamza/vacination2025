@@ -431,6 +431,7 @@ function printReport(data) {
   <html lang="fr">
   <head>
     <meta charset="UTF-8">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
     <title>Rapport de Vaccination — DSP Ghardaïa</title>
     <style>
       @page {
@@ -672,14 +673,18 @@ function printReport(data) {
         <div class="label">Chef de Service de Prévention</div>
         <p>Signature et Cachet</p>
       </div>
+        <div>
+        <div class="label"></div>
+        <p></p>
+      </div>
       <div>
         <div class="label">Directeur de la Santé et de la Population</div>
         <p>Signature et Cachet</p>
       </div>
     </div>
-
+    <br><br><br><br><br><br><br><br><br><br><br><br>
     <footer>
-      <br> <br> <br> <br> <br> <br> <br> <br> <br> <br>
+      
       © ${new Date().getFullYear()} — Ministère de la Santé, DSP Ghardaïa
 
     </footer>
