@@ -673,9 +673,7 @@ function printReport(data) {
         <div class="label">Chef de Service de Prévention</div>
         <p>Signature et Cachet</p>
       </div>
-        <div>
-        <div class="label"></div>
-        <p></p>
+      <div>
       </div>
       <div>
         <div class="label">Directeur de la Santé et de la Population</div>
