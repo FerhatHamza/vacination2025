@@ -524,7 +524,7 @@ function printReport(data) {
       }
 
       tr:nth-child(even) {
-        background-color: #f8f9fa;
+        background-color: #d64b4b;
       }
 
       .grand-total-title {
