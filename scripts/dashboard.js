@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initDashboard();
 });
 
-// 🧩 Access control
+//  Access control
 function checkAccess(requiredRole) {
   const USER_KEY = "userSession";
   const role = JSON.parse(localStorage.getItem(USER_KEY));
@@ -32,7 +32,7 @@ function checkAccess(requiredRole) {
   }
 }
 
-// 🧠 Main init
+//  Main init
 async function initDashboard() {
   checkAccess("admin");
   const [status, table] = await Promise.all([
@@ -43,7 +43,7 @@ async function initDashboard() {
   return { status, table };
 }
 
-// 📊 Render charts + global numbers
+//  Render charts + global numbers
 async function getStatus() {
   const result = await getAdminStats();
   const response2 = await getAdminStats2();
@@ -177,7 +177,7 @@ async function renderEtabTable() {
 
 
 
-// 📈 Charts rendering
+//  Charts rendering
 function dessinerGraphiques(data) {
   if (!data || !data.etabs || !data.categories) {
     console.error("❌ Données invalides passées à dessinerGraphiques");
@@ -225,7 +225,7 @@ function dessinerGraphiques(data) {
     });
   };
 
-  // 🏥 رسم بياني للمؤسسات - أعمدة أفقية
+  //  رسم بياني للمؤسسات - أعمدة أفقية
   const maxEtab = Math.max(...data.etabs.map(e => e.total));
   const etabColors = data.etabs.map(etab => {
     const percentage = etab.total / maxEtab;
@@ -280,7 +280,7 @@ function dessinerGraphiques(data) {
     }
   );
 
-  // 👥 رسم بياني للفئات - دائري مع تدرج لوني
+  //  رسم بياني للفئات - دائري مع تدرج لوني
   const categoriesArray = Object.entries(data.categories);
   const totalCategories = Object.values(data.categories).reduce((a, b) => a + b, 0);
 
@@ -345,7 +345,7 @@ function dessinerGraphiques(data) {
     }
   );
 
-  // 📊 إضافة إحصائيات إضافية
+  //  إضافة إحصائيات إضافية
   afficherStatistiques(data);
 }
 
@@ -596,7 +596,7 @@ function printReport(data) {
         <div>Ghardaïa, le : <strong>${today}</strong></div>
         <div>N° : ......... / DSP.47 / 2025</div>
       </div>
-      <div class="report-title">Rapport Officiel de Vaccination</div>
+      <div class="report-title">Rapport global de Vaccination</div>
     </header>
   `;
 
@@ -606,16 +606,16 @@ function printReport(data) {
     const centres = data.data[region];
     if (!centres || centres.length === 0) return;
 
-    html += `<div class="region-title">Secteur de ${region}</div>`;
+    html += `<div class="region-title">${region}</div>`;
     html += `
       <table>
         <thead>
           <tr>
             <th>Établissement / المؤسسة</th>
-            <th>+65 Sans Maladies Chroniques<br>(بدون أمراض مزمنة)</th>
-            <th>+65 Avec Maladies Chroniques<br>(مع أمراض مزمنة)</th>
-            <th>Adultes Chroniques<br>(بالغين مزمنين)</th>
-            <th>Enfants Chroniques<br>(أطفال مزمنين)</th>
+            <th>≥65 ans (sans maladie chronique)<br>(بدون أمراض مزمنة +65)</th>
+            <th>≥65 ans (avec maladie chronique)<br>(مع أمراض مزمنة +65)</th>
+            <th>Maladies Chroniques (adultes)<br>أمراض مزمنة (بالغين)</th>
+            <th>Maladies Chroniques (enfants)<br>(أطفال) أمراض مزمنة</th>
             <th>Femmes Enceintes<br>(نساء حوامل)</th>
             <th>Personnel Santé<br>(عمال الصحة)</th>
             <th>Pèlerins<br>(الحجاج)</th>
@@ -652,10 +652,10 @@ function printReport(data) {
       <div class="grand-total-title">TOTAL — ${t.region}</div>
       <table class="grand-total-table">
         <tbody>
-          <tr><td>+65 Sans Maladies Chroniques</td><td>${t.age_65_no_chronic}</td></tr>
-          <tr><td>+65 Avec Maladies Chroniques</td><td>${t.age_65_with_chronic}</td></tr>
-          <tr><td>Adultes Chroniques</td><td>${t.chronic_adults}</td></tr>
-          <tr><td>Enfants Chroniques</td><td>${t.chronic_children}</td></tr>
+          <tr><td>+65 ans (sans maladie chronique)</td><td>${t.age_65_no_chronic}</td></tr>
+          <tr><td>+65 ans (avec maladie chronique)</td><td>${t.age_65_with_chronic}</td></tr>
+          <tr><td>Maladies Chroniques (adultes)</td><td>${t.chronic_adults}</td></tr>
+          <tr><td>Maladies Chroniques (enfants)</td><td>${t.chronic_children}</td></tr>
           <tr><td>Femmes Enceintes</td><td>${t.pregnant_women}</td></tr>
           <tr><td>Personnel Santé</td><td>${t.health_staff}</td></tr>
           <tr><td>Pèlerins</td><td>${t.pilgrims}</td></tr>
@@ -679,6 +679,7 @@ function printReport(data) {
     </div>
 
     <footer>
+      <br> <br> <br> <br> <br> <br> <br> <br> <br> <br>
       © ${new Date().getFullYear()} — Ministère de la Santé, DSP Ghardaïa
 
     </footer>
