@@ -607,7 +607,7 @@ function printReport(data) {
     const centres = data.data[region];
     if (!centres || centres.length === 0) return;
 
-    html += `<br><br><br><div class="region-title">${region}</div>`;
+    html += `<br><div class="region-title">${region}</div>`;
     html += `
       <table>
         <thead>
