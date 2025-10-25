@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="assets/dashboard.css" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-      /* ⚙️ الشبكة العامة */
+      /*  الشبكة العامة */
       .stock-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -16,7 +16,7 @@
         padding: 0;
       }
 
-      /* 🎴 البطاقة */
+      /*  البطاقة */
       .stock-card {
         background: linear-gradient(135deg, #ffffff 0%, #f8f9fc 100%);
         border: 1px solid #e0e6ed;
@@ -36,7 +36,7 @@
         box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
       }
 
-      /* 🏢 اسم المؤسسة */
+      /*  اسم المؤسسة */
       .stock-etab {
         font-size: 1rem;
         font-weight: 600;
@@ -47,7 +47,7 @@
         gap: 0.4rem;
       }
 
-      /* 💉 الكمية */
+      /*  الكمية */
       .stock-amount {
         font-size: 1.3rem;
         font-weight: 700;
@@ -55,7 +55,7 @@
         text-align: right;
       }
 
-      /* ✨ تأثير زخرفي */
+      /*  تأثير زخرفي */
       .stock-card::before {
         content: "";
         position: absolute;
@@ -71,7 +71,7 @@
         opacity: 0.15;
       }
 
-      /* 🌙 الوضع الليلي */
+      /*  الوضع الليلي */
       @media (prefers-color-scheme: dark) {
         .stock-card {
           background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
@@ -143,7 +143,7 @@
       </section>
 
       <section class="raports-section">
-        <button id="raports">📄 Generate Rapports</button>
+        <button id="raports"> Generate Rapports</button>
       </section>
 
       <!-- Modified: Charts side by side -->
@@ -201,7 +201,7 @@
           html += `
       <div class="stock-card">
         <div class="stock-etab">
-          🏥 ${row.etab}
+           ${row.etab}
         </div>
         <div class="stock-amount">
           ${row.stock.toLocaleString("fr-FR")}
